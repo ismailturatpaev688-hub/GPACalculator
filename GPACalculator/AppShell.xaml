@@ -6,31 +6,34 @@
     xmlns:local="clr-namespace:GPACalculator"
     Title="GPACalculator">
 
-    <!-- Главная страница. Она будет первой, которую видит пользователь -->
+    <!-- Главная страница (первая при запуске) -->
     <ShellContent
         Title="Главная"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
-    <!-- НОВОЕ: Страница истории семестров -->
-    <ShellContent
-        Title="История"
-        ContentTemplate="{DataTemplate local:HistoryPage}"
-        Route="HistoryPage" />
-
-    <!-- НОВОЕ: Страница настроек -->
-    <ShellContent
-        Title="Настройки"
-        ContentTemplate="{DataTemplate local:SettingsPage}"
-        Route="SettingsPage" />
-
-    <!-- НОВОЕ: Страница статистики -->
+    <!-- Статистика успеваемости -->
     <ShellContent
         Title="Статистика"
         ContentTemplate="{DataTemplate local:StatisticsPage}"
         Route="StatisticsPage" />
 
-    <!-- НОВОЕ: Страница "О программе" -->
+    <!-- Расчет целевого GPA (НОВАЯ) -->
+    <ShellContent
+        Title="Цель"
+        ContentTemplate="{DataTemplate local:TargetCalculatorPage}"
+        Route="TargetCalculatorPage" />
+
+    <!-- Детали предмета (скрыта из меню, открывается по клику) -->
+    <!-- Не добавляем в ShellContent, открывается через навигацию -->
+
+    <!-- Помощь и инструкция (НОВАЯ) -->
+    <ShellContent
+        Title="Помощь"
+        ContentTemplate="{DataTemplate local:HelpPage}"
+        Route="HelpPage" />
+
+    <!-- О программе -->
     <ShellContent
         Title="О программе"
         ContentTemplate="{DataTemplate local:AboutPage}"

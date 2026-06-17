@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             x:Class="GPACalculator.TargetCalculatorPage"
+             x:DataType="viewModels:TargetCalculatorViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="Расчет цели">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="20">
+            <!-- Заголовок страницы -->
+            <Label Text="Расчет целевого GPA" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   TextColor="#2C3E50"
+                   Margin="0,10,0,20"/>
+
+            <!-- Блок ввода желаемого GPA -->
+            <Border Stroke="#E0E0E0" 
+                    StrokeShape="RoundRectangle 15" 
+                    Padding="20"
+                    BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Какой GPA вы хотите получить?" 
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#3498DB"
+                           Margin="0,0,0,10"/>
+
+                    <Label Text="Желаемый итоговый GPA" 
+                           FontSize="14" 
+                           TextColor="#7F8C8D"/>
+                    <Entry Placeholder="Например, 4.5" 
+                           Keyboard="Numeric"
+                           Text="{Binding TargetGpa, Mode=TwoWay}"
+                           BackgroundColor="#FAFAFA"
+                           Margin="0,0,0,10"/>
+
+                    <Label Text="Сколько предметов осталось?" 
+                           FontSize="14" 
+                           TextColor="#7F8C8D"/>
+                    <Entry Placeholder="Например, 3" 
+                           Keyboard="Numeric"
+                           Text="{Binding RemainingSubjects, Mode=TwoWay}"
+                           BackgroundColor="#FAFAFA"/>
+
+                    <!-- Кнопка расчета -->
+                    <Button Text="Рассчитать" 
+                            Command="{Binding CalculateCommand}"
+                            BackgroundColor="#9B59B6"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            HeightRequest="50"
+                            CornerRadius="10"
+                            Margin="0,15,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Блок с результатом расчета -->
+            <Border Stroke="#9B59B6"
+                    StrokeShape="RoundRectangle 15"
+                    Padding="25"
+                    BackgroundColor="White"
+                    IsVisible="{Binding HasResult}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Результат расчета"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#2C3E50"
+                           HorizontalOptions="Center"/>
+
+                    <BoxView HeightRequest="1" 
+                             Color="#ECF0F1"
+                             Margin="0,5"/>
+
+                    <!-- Основной результат -->
+                    <Label Text="{Binding ResultText}" 
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#9B59B6"
+                           HorizontalOptions="Center"
+                           LineBreakMode="WordWrap"
+                           HorizontalTextAlignment="Center"/>
+
+                    <!-- Дополнительная информация -->
+                    <Label Text="{Binding AdviceText}" 
+                           FontSize="16"
+                           TextColor="#7F8C8D"
+                           HorizontalOptions="Center"
+                           LineBreakMode="WordWrap"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,10,0,0"/>
+
+                    <!-- Текущий GPA для сравнения -->
+                    <Border Stroke="#3498DB"
+                            StrokeShape="RoundRectangle 10"
+                            Padding="15"
+                            BackgroundColor="#EBF5FB"
+                            Margin="0,10,0,0">
+                        <Label Text="{Binding CurrentGpaText}" 
+                               FontSize="16"
+                               TextColor="#2980B9"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Подсказка если нет результата -->
+            <Border Stroke="#BDC3C7"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="20"
+                    BackgroundColor="White"
+                    IsVisible="{Binding HasResult, Converter={StaticResource InverseBoolConverter}}">
+                <Label Text="Введите желаемый GPA и количество оставшихся предметов, чтобы увидеть какой средний балл вам нужен" 
+                       FontSize="14"
+                       TextColor="#95A5A6"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"/>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

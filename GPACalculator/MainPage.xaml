@@ -90,7 +90,7 @@
                             Padding="30"
                             BackgroundColor="White">
                         <VerticalStackLayout HorizontalOptions="Center">
-                            
+
                             <Label Text="Список пуст" 
                                    TextColor="#7F8C8D" 
                                    FontSize="30"
