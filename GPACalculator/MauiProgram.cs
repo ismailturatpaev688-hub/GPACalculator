@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GPACalculator.Services;
+using GPACalculator.ViewModels;
+using Microsoft.Extensions.Logging;
 
 namespace GPACalculator
 {
@@ -15,8 +17,21 @@ namespace GPACalculator
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            // 1. Регистрируем наш Сервис (математику) как синглтон.
+            // Синглтон означает, что на всё приложение будет создан только ОДИН экземпляр калькулятора.
+            // Это экономит память и соответствует принципу DIP.
+            builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
+
+            // 2. Регистрируем ViewModel. 
+            // Когда система будет создавать MainViewModel, она увидит, что ей нужен IGpaCalculator,
+            // посмотрит в этот контейнер, найдет там GpaCalculatorService и сама передаст его в конструктор!
+            builder.Services.AddSingleton<MainViewModel>();
+
+            // 3. Регистрируем саму страницу (View), чтобы она могла принять ViewModel.
+            builder.Services.AddSingleton<MainPage>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
