@@ -14,7 +14,8 @@ namespace GPACalculator.ViewModels
     {
         // Это событие, которое срабатывает, когда свойство меняется.
         // Экран (XAML) подписывается на это событие, чтобы знать, когда обновить текст на экране.
-        public event PropertyChangedEventHandler PropertyChanged;
+        // Добавили "?" чтобы разрешить null для события
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         // Метод, который вызывает это событие.
         // [CallerMemberName] - это очень крутая фишка C#. 
