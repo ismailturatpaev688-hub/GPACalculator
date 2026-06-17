@@ -21,6 +21,7 @@ namespace GPACalculator
             // Синглтон означает, что на всё приложение будет создан только ОДИН экземпляр калькулятора.
             // Это экономит память и соответствует принципу DIP.
             builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
+            builder.Services.AddSingleton<IDataStorageService, DataStorageService>();
 
             // 2. Регистрируем ViewModel. 
             // Когда система будет создавать MainViewModel, она увидит, что ей нужен IGpaCalculator,
@@ -29,6 +30,21 @@ namespace GPACalculator
 
             // 3. Регистрируем саму страницу (View), чтобы она могла принять ViewModel.
             builder.Services.AddSingleton<MainPage>();
+
+            builder.Services.AddSingleton<HistoryViewModel>();
+            builder.Services.AddSingleton<HistoryPage>();
+
+            builder.Services.AddSingleton<SettingsViewModel>();
+            builder.Services.AddSingleton<SettingsPage>();
+
+            builder.Services.AddSingleton<StatisticsViewModel>();
+            builder.Services.AddSingleton<StatisticsPage>();
+
+            builder.Services.AddTransient<SubjectDetailViewModel>();
+            builder.Services.AddTransient<SubjectDetailPage>();
+
+            builder.Services.AddSingleton<AboutViewModel>();
+            builder.Services.AddSingleton<AboutPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

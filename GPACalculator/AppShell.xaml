@@ -6,9 +6,34 @@
     xmlns:local="clr-namespace:GPACalculator"
     Title="GPACalculator">
 
+    <!-- Главная страница. Она будет первой, которую видит пользователь -->
     <ShellContent
-        Title="Home"
+        Title="Главная"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+
+    <!-- НОВОЕ: Страница истории семестров -->
+    <ShellContent
+        Title="История"
+        ContentTemplate="{DataTemplate local:HistoryPage}"
+        Route="HistoryPage" />
+
+    <!-- НОВОЕ: Страница настроек -->
+    <ShellContent
+        Title="Настройки"
+        ContentTemplate="{DataTemplate local:SettingsPage}"
+        Route="SettingsPage" />
+
+    <!-- НОВОЕ: Страница статистики -->
+    <ShellContent
+        Title="Статистика"
+        ContentTemplate="{DataTemplate local:StatisticsPage}"
+        Route="StatisticsPage" />
+
+    <!-- НОВОЕ: Страница "О программе" -->
+    <ShellContent
+        Title="О программе"
+        ContentTemplate="{DataTemplate local:AboutPage}"
+        Route="AboutPage" />
 
 </Shell>
