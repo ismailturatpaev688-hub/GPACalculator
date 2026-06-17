@@ -78,4 +78,6 @@ public class ChartItem
     public string Name { get; set; }
     public double Gpa { get; set; }
     public double HeightPercent { get; set; }
+    public double ProgressValue => Gpa / 5.0; // Добавьте это свойство
+
 }

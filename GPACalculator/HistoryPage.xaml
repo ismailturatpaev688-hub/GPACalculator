@@ -1,12 +1,70 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             xmlns:models="clr-namespace:GPACalculator.Models"
              x:Class="GPACalculator.HistoryPage"
-             Title="HistoryPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:DataType="viewModels:HistoryViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="История семестров">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="20">
+            <Label Text="История семестров" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   TextColor="#2C3E50"
+                   Margin="0,10,0,20"/>
+
+            <Button Text="Загрузить историю" 
+                    Command="{Binding LoadSemestersCommand}"
+                    BackgroundColor="#3498DB"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    CornerRadius="10"/>
+
+            <CollectionView ItemsSource="{Binding Semesters}" 
+                            MinimumHeightRequest="100"
+                            Margin="0,0,0,15">
+
+                <CollectionView.EmptyView>
+                    <Border Stroke="#BDC3C7" StrokeShape="RoundRectangle 10" Padding="30" BackgroundColor="White">
+                        <VerticalStackLayout HorizontalOptions="Center">
+                            <Label Text="Нет сохраненных семестров" TextColor="#7F8C8D" FontSize="20" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                            <Label Text="Сохраните семестр на главной странице!" TextColor="#95A5A6" FontSize="14" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Semester">
+                        <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10" Padding="15" Margin="0,5" BackgroundColor="White">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="18" TextColor="#2C3E50"/>
+                                    <Label Text="{Binding Gpa, StringFormat='GPA: {0:F2}'}" FontSize="16" TextColor="#27AE60"/>
+                                    <Label Text="{Binding Subjects.Count, StringFormat='Предметов: {0}'}" FontSize="14" TextColor="#7F8C8D"/>
+                                </VerticalStackLayout>
+
+                                <!-- Кнопка удаления с привязкой к команде из ViewModel -->
+                                <Button Grid.Column="1"
+                                        Text="Удалить"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HistoryViewModel}}, Path=DeleteSemesterCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#E74C3C"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        HeightRequest="40"
+                                        CornerRadius="8"
+                                        VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
