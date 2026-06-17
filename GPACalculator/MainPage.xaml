@@ -2,10 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             xmlns:models="clr-namespace:GPACalculator.Models"
              x:Class="GPACalculator.MainPage"
              x:DataType="viewModels:MainViewModel">
 
-    <!-- ScrollView нужен, чтобы если экран маленький, можно было прокрутить содержимое -->
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
@@ -15,26 +15,26 @@
                    FontAttributes="Bold" 
                    HorizontalOptions="Center" />
 
-            <!-- Блок ввода данных - ЗАМЕНИЛИ Frame НА Border -->
+            <!-- Блок ввода данных -->
             <Border Stroke="LightGray" 
                     StrokeShape="RoundRectangle 10" 
-                    Padding="10" 
-                    Margin="0">
+                    Padding="20">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Добавить новый предмет:" FontAttributes="Bold"/>
 
                     <Entry Placeholder="Название (напр. Математика)" 
-                           Text="{Binding NewSubjectName}" />
+                           Text="{Binding NewSubjectName, Mode=TwoWay}" />
 
                     <Entry Placeholder="Оценка (2,0 - 5,0)" 
                            Keyboard="Numeric" 
-                           Text="{Binding NewSubjectGrade}" />
+                           Text="{Binding NewSubjectGrade, Mode=TwoWay}" />
 
                     <Entry Placeholder="Вес предмета (напр. 3)" 
                            Keyboard="Numeric" 
-                           Text="{Binding NewSubjectWeight}" />
+                           Text="{Binding NewSubjectWeight, Mode=TwoWay}" />
 
                     <Button Text="Добавить предмет" 
+                            FontSize="20"
                             Command="{Binding AddSubjectCommand}" 
                             BackgroundColor="Green" 
                             TextColor="White"/>
@@ -42,25 +42,54 @@
             </Border>
 
             <!-- Блок списка предметов -->
-            <Label Text="Ваши предметы:" FontAttributes="Bold" Margin="0,10,0,0"/>
+            <Label Text="Ваши предметы:" FontAttributes="Bold" Margin="0,10,0,0" FontSize="20"/>
+
+            <!-- Показываем количество предметов -->
+            <Label Text="{Binding Subjects.Count, StringFormat='Всего предметов: {0}'}" 
+                   FontSize="16" 
+                   TextColor="DarkBlue" 
+                   FontAttributes="Bold"
+                   Margin="0,0,0,5"/>
 
             <!-- CollectionView - список предметов -->
-            <CollectionView ItemsSource="{Binding Subjects}" HeightRequest="150">
+            <CollectionView ItemsSource="{Binding Subjects}" 
+                            MinimumHeightRequest="100"
+                            BackgroundColor="LightYellow"
+                            Margin="0,0,0,10">
+
+                <!-- Показываем это, если список пустой -->
+                <CollectionView.EmptyView>
+                    <Border StrokeShape="RoundRectangle 5" 
+                            Padding="20"
+                            BackgroundColor="#42AAFF">
+                        <Label Text="Список пуст. Добавьте пожалуйста первый предмет." 
+                               TextColor="White" 
+                               HorizontalOptions="Center"
+                               FontSize="20"
+                               FontAttributes="Bold"/>
+                    </Border>
+                </CollectionView.EmptyView>
+
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Subject" 
-                                  xmlns:models="clr-namespace:GPACalculator.Models">
-                        <!-- ЗАМЕНИЛИ Frame НА Border -->
-                        <Border Stroke="Gray" 
+                    <DataTemplate x:DataType="models:Subject">
+                        <Border Stroke="DarkGray" 
                                 StrokeShape="RoundRectangle 5" 
-                                Padding="5" 
-                                Margin="0,2">
-                            <HorizontalStackLayout Spacing="10">
+                                Padding="10" 
+                                Margin="0,2"
+                                BackgroundColor="White">
+                            <HorizontalStackLayout Spacing="15">
                                 <Label Text="{Binding Name}" 
                                        FontAttributes="Bold" 
-                                       WidthRequest="120"/>
+                                       WidthRequest="150"
+                                       FontSize="20"
+                                       TextColor="Black"/>
                                 <Label Text="{Binding Grade, StringFormat='Оценка: {0}'}" 
-                                       WidthRequest="100"/>
-                                <Label Text="{Binding Weight, StringFormat='Вес: {0}'}"/>
+                                       WidthRequest="120"
+                                       FontSize="18"
+                                       TextColor="DarkGreen"/>
+                                <Label Text="{Binding Weight, StringFormat='Вес: {0}'}"
+                                       FontSize="18"
+                                       TextColor="DarkBlue"/>
                             </HorizontalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -71,28 +100,29 @@
             <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
                 <Button Text="Рассчитать GPA" 
                         Command="{Binding CalculateGpaCommand}" 
+                        FontSize="18"
                         BackgroundColor="Blue" 
                         TextColor="White"/>
 
                 <Button Text="Спрогнозировать" 
-                        Command="{Binding PredictGradeCommand}" 
-                        BackgroundColor="Purple" 
+                        Command="{Binding PredictGradeCommand}"
+                        FontSize="18"
+                        BackgroundColor="#009B77" 
                         TextColor="White"/>
             </HorizontalStackLayout>
 
-            <!-- Блок вывода результатов - ЗАМЕНИЛИ Frame НА Border -->
+            <!-- Блок вывода результатов -->
             <Border Stroke="Blue" 
                     StrokeShape="RoundRectangle 10" 
                     Padding="10" 
-                    BackgroundColor="AliceBlue"
-                    Margin="0">
+                    BackgroundColor="AliceBlue">
                 <VerticalStackLayout>
                     <Label Text="{Binding GpaResultText}" 
                            FontSize="18" 
                            TextColor="DarkBlue"/>
                     <Label Text="{Binding PredictionText}" 
                            FontSize="16" 
-                           TextColor="DarkMagenta" 
+                           TextColor="DarkGreen" 
                            Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </Border>
