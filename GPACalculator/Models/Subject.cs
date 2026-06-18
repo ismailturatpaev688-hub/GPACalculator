@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GPACalculator.Models
+﻿namespace GPACalculator.Models
 {
     // Класс Subject (Предмет) представляет собой один предмет в нашем списке.
     // Принцип SRP: этот класс отвечает ТОЛЬКО за хранение данных о предмете.
@@ -19,7 +15,6 @@ namespace GPACalculator.Models
         public double Weight { get; set; }
 
         // Конструктор — это способ создать объект с уже заполненными данными.
-        // Когда мы будем добавлять предмет, нам не придется заполнять каждое поле отдельно.
         public Subject(string name, double grade, double weight)
         {
             Name = name;

@@ -1,20 +1,18 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace GPACalculator.ViewModels
 {
     public class SingleSubjectCalculatorViewModel : BaseViewModel
     {
-        // Поля для хранения данных
         private string _subjectName = "";
         private string _newGrade = "";
         private string _resultText = "Добавьте оценки для расчета";
         private double _averageGrade;
 
-        // Список оценок по предмету
         public ObservableCollection<GradeEntry> Grades { get; } = new();
 
-        // Свойства для привязки к UI
         public string SubjectName
         {
             get => _subjectName;
@@ -67,7 +65,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Команды
         public ICommand AddGradeCommand { get; }
         public ICommand CalculateCommand { get; }
         public ICommand ClearCommand { get; }
@@ -79,12 +76,10 @@ namespace GPACalculator.ViewModels
             ClearCommand = new Command(ExecuteClear);
         }
 
-        // Добавить оценку
         private void ExecuteAddGrade()
         {
             if (double.TryParse(NewGrade, out double grade))
             {
-                // Проверяем что оценка в допустимом диапазоне
                 if (grade >= 2 && grade <= 5)
                 {
                     Grades.Add(new GradeEntry
@@ -92,7 +87,7 @@ namespace GPACalculator.ViewModels
                         Grade = grade,
                         DisplayText = grade.ToString("F1")
                     });
-                    NewGrade = ""; // Очищаем поле ввода
+                    NewGrade = "";
                     ResultText = $"Добавлено оценок: {Grades.Count}";
                 }
                 else
@@ -106,7 +101,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Рассчитать средний балл
         private void ExecuteCalculate()
         {
             if (Grades.Count == 0)
@@ -115,11 +109,9 @@ namespace GPACalculator.ViewModels
                 return;
             }
 
-            // Считаем среднее арифметическое
             double sum = Grades.Sum(g => g.Grade);
             AverageGrade = sum / Grades.Count;
 
-            // Формируем результат
             string gradeText = AverageGrade switch
             {
                 >= 4.5 => "Отлично! 🎉",
@@ -131,7 +123,6 @@ namespace GPACalculator.ViewModels
             ResultText = $"Средний балл по \"{SubjectName}\": {AverageGrade:F2}\n{gradeText}";
         }
 
-        // Очистить все
         private void ExecuteClear()
         {
             Grades.Clear();

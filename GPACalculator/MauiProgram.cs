@@ -36,11 +36,10 @@ namespace GPACalculator
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<AboutPage>();
 
-            // НОВАЯ: Страница расчета целевого GPA
-            // TargetCalculatorViewModel создается вручную с передачей MainViewModel
+            // Страница расчета целевого GPA
             builder.Services.AddSingleton<TargetCalculatorPage>();
 
-            // НОВАЯ: Страница помощи
+            // Страница помощи
             builder.Services.AddSingleton<HelpViewModel>();
             builder.Services.AddSingleton<HelpPage>();
 

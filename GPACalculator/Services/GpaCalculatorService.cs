@@ -1,8 +1,6 @@
-﻿using GPACalculator.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {
@@ -37,6 +35,9 @@ namespace GPACalculator.Services
         // Реализуем метод прогноза итоговой оценки
         public double PredictNeededGrade(IEnumerable<Subject> currentSubjects, double targetGpa, double lastSubjectWeight)
         {
+            // Проверка деления на ноль СРАЗУ (fail-fast принцип)
+            if (lastSubjectWeight == 0) return 0;
+
             // Математика прогноза:
             // Мы знаем, что итоговый GPA = (Сумма_текущих_баллов + Нужная_оценка * Вес_последнего) / (Сумма_текущих_весов + Вес_последнего)
             // Выражаем отсюда Нужную_оценку.
@@ -52,13 +53,8 @@ namespace GPACalculator.Services
             // Сколько баллов нам не хватает до цели
             double missingWeightedSum = targetTotalWeightedSum - currentWeightedSum;
 
-            // Если вес последнего предмета 0, мы не можем повлиять на оценку
-            if (lastSubjectWeight == 0) return 0;
-
             // Сама нужная оценка
-            double neededGrade = missingWeightedSum / lastSubjectWeight;
-
-            return neededGrade;
+            return missingWeightedSum / lastSubjectWeight;
         }
     }
 }

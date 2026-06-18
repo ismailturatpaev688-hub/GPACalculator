@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GPACalculator.ViewModels
+﻿namespace GPACalculator.ViewModels
 {
     public class AboutViewModel : BaseViewModel
     {
@@ -10,7 +6,6 @@ namespace GPACalculator.ViewModels
         public string Developers => "Андрей Уски, Исмаил Туратпаев";
         public string Group => "Группа 1942с";
         public string Description => "Калькулятор GPA для студентов. " +
-                                     "Позволяет отслеживать успеваемость, " +
-                                     "прогнозировать оценки и анализировать прогресс.";
+                                     "Позволяет отслеживать успеваемость и планировать цели.";
     }
 }

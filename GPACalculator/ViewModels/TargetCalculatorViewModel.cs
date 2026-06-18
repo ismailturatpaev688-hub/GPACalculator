@@ -1,9 +1,6 @@
-﻿using GPACalculator.Services;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Linq;
 using System.Windows.Input;
+using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
 {
@@ -24,8 +21,6 @@ namespace GPACalculator.ViewModels
         private bool _hasResult;
 
         // Свойства для привязки к UI
-
-        // Желаемый GPA
         public string TargetGpa
         {
             get => _targetGpa;
@@ -39,7 +34,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Количество оставшихся предметов
         public string RemainingSubjects
         {
             get => _remainingSubjects;
@@ -53,7 +47,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Текст результата расчета
         public string ResultText
         {
             get => _resultText;
@@ -67,7 +60,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Совет студенту
         public string AdviceText
         {
             get => _adviceText;
@@ -81,7 +73,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Текст текущего GPA
         public string CurrentGpaText
         {
             get => _currentGpaText;
@@ -95,7 +86,6 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Есть ли результат для отображения
         public bool HasResult
         {
             get => _hasResult;
@@ -116,7 +106,7 @@ namespace GPACalculator.ViewModels
         public TargetCalculatorViewModel(IGpaCalculator gpaCalculator, MainViewModel mainViewModel)
         {
             _gpaCalculator = gpaCalculator;
-            _mainViewModel = mainViewModel; // Сохраняем ссылку на главную ViewModel
+            _mainViewModel = mainViewModel;
 
             CalculateCommand = new Command(ExecuteCalculate);
 
@@ -127,10 +117,8 @@ namespace GPACalculator.ViewModels
         // Метод расчета необходимого среднего балла
         private void ExecuteCalculate()
         {
-            // Получаем предметы из главной ViewModel
             var subjects = _mainViewModel.Subjects;
 
-            // Проверяем что есть предметы
             if (subjects.Count == 0)
             {
                 ResultText = "Сначала добавьте предметы на главной странице!";
@@ -139,7 +127,6 @@ namespace GPACalculator.ViewModels
                 return;
             }
 
-            // Пытаемся прочитать введенные данные
             if (!double.TryParse(TargetGpa, out double targetGpa) || targetGpa < 0 || targetGpa > 5)
             {
                 ResultText = "Ошибка: введите корректный целевой GPA (0-5)";
@@ -166,22 +153,15 @@ namespace GPACalculator.ViewModels
             double currentWeightedSum = subjects.Sum(s => s.Grade * s.Weight);
 
             // Предполагаем что каждый оставшийся предмет имеет средний вес 3
-            double remainingWeightSum = remaining * 3.0;
+            const double averageRemainingWeight = 3.0;
+            double remainingWeightSum = remaining * averageRemainingWeight;
 
             // Общая сумма весов после всех предметов
             double totalWeightSum = currentWeightSum + remainingWeightSum;
 
-            // Сколько всего баллов нужно набрать для целевого GPA
-            double neededTotalWeightedSum = targetGpa * totalWeightSum;
-
-            // Сколько баллов уже есть
-            double currentTotalWeightedSum = currentWeightedSum;
-
-            // Сколько баллов нужно набрать за оставшиеся предметы
-            double neededRemainingWeightedSum = neededTotalWeightedSum - currentTotalWeightedSum;
-
             // Необходимый средний балл за оставшиеся предметы
-            double neededAverageGrade = neededRemainingWeightedSum / remainingWeightSum;
+            // УПРОЩЕНО: убраны лишние промежуточные переменные
+            double neededAverageGrade = (targetGpa * totalWeightSum - currentWeightedSum) / remainingWeightSum;
 
             // Формируем результат
             if (neededAverageGrade > 5.0)

@@ -1,7 +1,5 @@
-﻿using GPACalculator.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {

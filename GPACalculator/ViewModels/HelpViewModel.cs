@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GPACalculator.ViewModels
+﻿namespace GPACalculator.ViewModels
 {
     // ViewModel для страницы помощи (простая, только данные)
     public class HelpViewModel : BaseViewModel

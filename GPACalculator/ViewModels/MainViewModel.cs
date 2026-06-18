@@ -13,8 +13,6 @@ namespace GPACalculator.ViewModels
         private readonly IGpaCalculator _gpaCalculator;
 
         // --- ПРИВАТНЫЕ ПОЛЯ (BACKING FIELDS) ---
-        // Это переменные, где реально хранятся данные. Они приватные, 
-        // потому что экран не должен иметь к ним прямой доступ.
         private string _newSubjectName = "";
         private string _newSubjectGrade = "";
         private string _newSubjectWeight = "";
@@ -22,23 +20,15 @@ namespace GPACalculator.ViewModels
         private string _predictionText = "";
 
         // --- ПУБЛИЧНЫЕ СВОЙСТВА (PROPERTIES) ---
-        // Именно к этим свойствам привязывается экран через {Binding} в XAML.
-        // Раньше это делал атрибут [ObservableProperty]. Теперь мы пишем это вручную.
-
         public string NewSubjectName
         {
-            // get просто возвращает значение из приватной переменной
             get => _newSubjectName;
-
-            // set вызывается, когда мы в коде пишем NewSubjectName = "Новое значение".
             set
             {
-                // Проверяем, действительно ли значение изменилось.
-                // Это нужно, чтобы не дергать экран лишний раз, если значение то же самое.
                 if (_newSubjectName != value)
                 {
-                    _newSubjectName = value; // Сохраняем новое значение
-                    OnPropertyChanged();     // Кричим экрану: "NewSubjectName изменился, обнови текст!"
+                    _newSubjectName = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -101,9 +91,6 @@ namespace GPACalculator.ViewModels
         public ObservableCollection<Subject> Subjects { get; } = new();
 
         // --- КОМАНДЫ (COMMANDS) ---
-        // В XAML кнопки привязываются к этим свойствам типа ICommand.
-        // Раньше это делал атрибут [RelayCommand]. Теперь мы используем встроенный в MAUI класс Command.
-
         public ICommand AddSubjectCommand { get; }
         public ICommand CalculateGpaCommand { get; }
         public ICommand PredictGradeCommand { get; }
@@ -114,18 +101,12 @@ namespace GPACalculator.ViewModels
             _gpaCalculator = gpaCalculator;
 
             // Инициализируем команды. 
-            // new Command(Метод) означает: "Когда нажмут кнопку, вызови этот метод".
-            // Мы передаем сюда названия методов, которые написаны ниже.
             AddSubjectCommand = new Command(ExecuteAddSubject);
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
             PredictGradeCommand = new Command(ExecutePredictGrade);
         }
 
         // --- МЕТОДЫ КОМАНД ---
-        // Это методы, которые реально выполняют действия. 
-        // Они приватные, потому что вызываются только через команды (кнопки).
-        // Я добавил префикс "Execute", чтобы отличать их от самих свойств-команд.
-
         private void ExecuteAddSubject()
         {
             // Простая проверка: если пользователь не ввел имя, ругаемся и выходим
@@ -144,8 +125,6 @@ namespace GPACalculator.ViewModels
                 Subjects.Add(newSubject);
 
                 // Очищаем поля ввода. 
-                // Обратите внимание: мы присваиваем значения СВОЙСТВАМ (с большой буквы),
-                // а не приватным полям. Это важно, чтобы сработал сеттер и вызвался OnPropertyChanged!
                 NewSubjectName = "";
                 NewSubjectGrade = "";
                 NewSubjectWeight = "";
