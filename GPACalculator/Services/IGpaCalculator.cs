@@ -3,7 +3,7 @@ using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {
-+    public interface IGpaCalculator
+    public interface IGpaCalculator
     {
         // Метод для расчета текущего среднего балла (GPA)
         double CalculateGpa(IEnumerable<Subject> subjects);
