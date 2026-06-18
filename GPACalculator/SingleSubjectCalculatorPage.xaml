@@ -34,6 +34,16 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Поле веса -->
+            <HorizontalStackLayout Spacing="10">
+                <Entry Placeholder="Название предмета" 
+                       Text="{Binding SubjectName, Mode=TwoWay}"
+                       BackgroundColor="#FAFAFA" HorizontalOptions="Fill"/>
+                <Entry Placeholder="Вес (1-5)" 
+                       Text="{Binding Weight, Mode=TwoWay}"
+                       Keyboard="Numeric" BackgroundColor="#FAFAFA" WidthRequest="90"/>
+            </HorizontalStackLayout>
+
             <!-- Добавление оценок -->
             <Border Stroke="#E0E0E0" 
                     StrokeShape="RoundRectangle 15" 
@@ -98,42 +108,34 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Кнопки управления -->
-            <HorizontalStackLayout Spacing="15" 
-                                   HorizontalOptions="Center">
-                <Button Text="Рассчитать" 
-                        Command="{Binding CalculateCommand}"
-                        BackgroundColor="#3498DB"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        HeightRequest="50"
-                        CornerRadius="10"
-                        WidthRequest="160"/>
+            <!-- Блок кнопок управления -->
+            <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                <HorizontalStackLayout Spacing="15">
+                    <Button Text="Рассчитать" Command="{Binding CalculateCommand}"
+                            BackgroundColor="#3498DB" TextColor="White" FontAttributes="Bold"
+                            FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"/>
+                    <Button Text="Очистить" Command="{Binding ClearCommand}"
+                            BackgroundColor="#95A5A6" TextColor="White" FontAttributes="Bold"
+                            FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"/>
+                </HorizontalStackLayout>
 
-                <Button Text="Очистить" 
-                        Command="{Binding ClearCommand}"
-                        BackgroundColor="#95A5A6"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        HeightRequest="50"
-                        CornerRadius="10"
-                        WidthRequest="160"/>
-            </HorizontalStackLayout>
-
-            <!-- Результат -->
-            <Border Stroke="#27AE60"
+                <!-- Результат -->
+                <Border Stroke="#27AE60"
                     StrokeShape="RoundRectangle 15"
                     Padding="25"
                     BackgroundColor="#EAFAF1">
-                <Label Text="{Binding ResultText}" 
+                    <Label Text="{Binding ResultText}" 
                        FontSize="18"
                        TextColor="#27AE60"
                        HorizontalOptions="Center"
                        HorizontalTextAlignment="Center"
                        LineBreakMode="WordWrap"/>
-            </Border>
+                </Border>
+                <!-- Синхронизация с главной страницей и статистикой -->
+                <Button Text="Сохранить в общий список" Command="{Binding SaveToMainCommand}"
+            BackgroundColor="#27AE60" TextColor="White" FontAttributes="Bold"
+            FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="315"/>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

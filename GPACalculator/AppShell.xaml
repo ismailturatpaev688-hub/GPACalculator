@@ -11,7 +11,13 @@
         Title="Главная"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
-
+    
+    <!-- По предмету -->
+        <ShellContent
+        Title="По предмету"
+        ContentTemplate="{DataTemplate local:SingleSubjectCalculatorPage}"
+        Route="SingleSubjectCalculatorPage" />
+    
     <!-- Статистика успеваемости -->
     <ShellContent
         Title="Статистика"
@@ -24,9 +30,6 @@
         ContentTemplate="{DataTemplate local:TargetCalculatorPage}"
         Route="TargetCalculatorPage" />
 
-    <!-- Детали предмета (скрыта из меню, открывается по клику) -->
-    <!-- Не добавляем в ShellContent, открывается через навигацию -->
-
     <!-- Помощь и инструкция (НОВАЯ) -->
     <ShellContent
         Title="Помощь"
@@ -38,10 +41,5 @@
         Title="О программе"
         ContentTemplate="{DataTemplate local:AboutPage}"
         Route="AboutPage" />
-
-    <ShellContent
-    Title="По предмету"
-    ContentTemplate="{DataTemplate local:SingleSubjectCalculatorPage}"
-    Route="SingleSubjectCalculatorPage" />
 
 </Shell>

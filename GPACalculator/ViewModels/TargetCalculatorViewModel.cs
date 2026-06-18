@@ -160,7 +160,6 @@ namespace GPACalculator.ViewModels
             double totalWeightSum = currentWeightSum + remainingWeightSum;
 
             // Необходимый средний балл за оставшиеся предметы
-            // УПРОЩЕНО: убраны лишние промежуточные переменные
             double neededAverageGrade = (targetGpa * totalWeightSum - currentWeightedSum) / remainingWeightSum;
 
             // Формируем результат

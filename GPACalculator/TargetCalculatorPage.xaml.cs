@@ -3,7 +3,6 @@ using GPACalculator.ViewModels;
 
 namespace GPACalculator;
 
-// Страница расчета целевого GPA
 public partial class TargetCalculatorPage : ContentPage
 {
     // Конструктор создает ViewModel вручную с нужными зависимостями

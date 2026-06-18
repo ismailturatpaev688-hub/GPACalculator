@@ -3,9 +3,7 @@ using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {
-    // Интерфейс калькулятора. 
-    // Принцип DIP: ViewModel будет зависеть от этого интерфейса, а не от конкретного класса.
-    public interface IGpaCalculator
++    public interface IGpaCalculator
     {
         // Метод для расчета текущего среднего балла (GPA)
         double CalculateGpa(IEnumerable<Subject> subjects);

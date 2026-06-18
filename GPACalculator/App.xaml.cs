@@ -8,9 +8,10 @@ namespace GPACalculator
         {
             InitializeComponent();
         }
-
-        protected override Window CreateWindow(IActivationState? activationState)
+ 
+        protected override Window CreateWindow(IActivationState? activationState) // Он передаёт информацию об активации
         {
+            // Создаёт экземпляр класса Window
             return new Window(new AppShell());
         }
     }

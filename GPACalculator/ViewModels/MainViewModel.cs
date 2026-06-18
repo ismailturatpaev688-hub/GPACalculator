@@ -5,126 +5,87 @@ using System.Windows.Input;
 
 namespace GPACalculator.ViewModels
 {
-    // Теперь мы наследуемся от нашего собственного BaseViewModel.
-    // Мы убрали слово "partial", потому что нам больше не нужна генерация кода.
     public class MainViewModel : BaseViewModel
     {
-        // Это наш "сервис" (математика). Принцип DIP остается в силе.
+        // Сервисы
         private readonly IGpaCalculator _gpaCalculator;
+        private readonly ISubjectDataService _dataService;
 
-        // --- ПРИВАТНЫЕ ПОЛЯ (BACKING FIELDS) ---
+        // Приватные поля
         private string _newSubjectName = "";
         private string _newSubjectGrade = "";
         private string _newSubjectWeight = "";
         private string _gpaResultText = "Введите предметы и нажмите Рассчитать";
         private string _predictionText = "";
 
-        // --- ПУБЛИЧНЫЕ СВОЙСТВА (PROPERTIES) ---
         public string NewSubjectName
         {
             get => _newSubjectName;
-            set
-            {
-                if (_newSubjectName != value)
-                {
-                    _newSubjectName = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { if (_newSubjectName != value) { _newSubjectName = value; OnPropertyChanged(); } }
         }
-
         public string NewSubjectGrade
         {
             get => _newSubjectGrade;
-            set
-            {
-                if (_newSubjectGrade != value)
-                {
-                    _newSubjectGrade = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { if (_newSubjectGrade != value) { _newSubjectGrade = value; OnPropertyChanged(); } }
         }
-
         public string NewSubjectWeight
         {
             get => _newSubjectWeight;
-            set
-            {
-                if (_newSubjectWeight != value)
-                {
-                    _newSubjectWeight = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { if (_newSubjectWeight != value) { _newSubjectWeight = value; OnPropertyChanged(); } }
         }
-
         public string GpaResultText
         {
             get => _gpaResultText;
-            set
-            {
-                if (_gpaResultText != value)
-                {
-                    _gpaResultText = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { if (_gpaResultText != value) { _gpaResultText = value; OnPropertyChanged(); } }
         }
-
         public string PredictionText
         {
             get => _predictionText;
-            set
-            {
-                if (_predictionText != value)
-                {
-                    _predictionText = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { if (_predictionText != value) { _predictionText = value; OnPropertyChanged(); } }
         }
 
-        // Это наш список предметов. 
-        // ObservableCollection - это стандартный класс C#, он сам умеет уведомлять экран,
-        // если мы добавили (Add) или удалили (Remove) элемент. Его переделывать не нужно.
-        public ObservableCollection<Subject> Subjects { get; } = new();
+        // Берём коллекцию напрямую из сервиса — она общая для всех страниц
+        public ObservableCollection<Subject> Subjects => _dataService.Subjects;
 
-        // --- КОМАНДЫ (COMMANDS) ---
         public ICommand AddSubjectCommand { get; }
         public ICommand CalculateGpaCommand { get; }
         public ICommand PredictGradeCommand { get; }
 
-        // Конструктор. Сюда "внедряется" наш калькулятор.
-        public MainViewModel(IGpaCalculator gpaCalculator)
+        public MainViewModel(IGpaCalculator gpaCalculator, ISubjectDataService dataService)
         {
             _gpaCalculator = gpaCalculator;
+            _dataService = dataService;
 
-            // Инициализируем команды. 
             AddSubjectCommand = new Command(ExecuteAddSubject);
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
             PredictGradeCommand = new Command(ExecutePredictGrade);
         }
 
-        // --- МЕТОДЫ КОМАНД ---
         private void ExecuteAddSubject()
         {
-            // Простая проверка: если пользователь не ввел имя, ругаемся и выходим
             if (string.IsNullOrWhiteSpace(NewSubjectName))
             {
                 GpaResultText = "Ошибка: Введите название предмета!";
                 return;
             }
 
-            // Пытаемся превратить текст из полей ввода в числа (double)
             if (double.TryParse(NewSubjectGrade, out double grade) &&
                 double.TryParse(NewSubjectWeight, out double weight))
             {
-                // Если всё хорошо, создаем новый предмет и добавляем в список
-                var newSubject = new Subject(NewSubjectName, grade, weight);
-                Subjects.Add(newSubject);
+                if (grade < 2.0 || grade > 5.0)
+                {
+                    GpaResultText = "Ошибка: Оценка должна быть числом от 2 до 5!";
+                    return;
+                }
+                if (weight < 1.0 || weight > 5.0)
+                {
+                    GpaResultText = "Ошибка: Вес предмета должен быть числом от 1 до 5!";
+                    return;
+                }
 
-                // Очищаем поля ввода. 
+                // Сервис сам проверит: есть ли такой предмет. Если есть — допишет оценку.
+                _dataService.AddOrUpdate(NewSubjectName, grade, weight);
+
                 NewSubjectName = "";
                 NewSubjectGrade = "";
                 NewSubjectWeight = "";
@@ -133,7 +94,6 @@ namespace GPACalculator.ViewModels
             }
             else
             {
-                // Если ввели буквы вместо цифр
                 GpaResultText = "Ошибка: Оценка и вес должны быть числами!";
             }
         }
@@ -145,11 +105,7 @@ namespace GPACalculator.ViewModels
                 GpaResultText = "Список пуст! Добавьте предметы.";
                 return;
             }
-
-            // Вызываем наш сервис.
             double gpa = _gpaCalculator.CalculateGpa(Subjects);
-
-            // Форматируем число до 2 знаков после запятой (F2)
             GpaResultText = $"Ваш текущий GPA: {gpa:F2}";
         }
 
@@ -160,25 +116,16 @@ namespace GPACalculator.ViewModels
                 PredictionText = "Сначала добавьте хотя бы один предмет.";
                 return;
             }
-
-            // Допустим, студент хочет итоговый GPA 4.5, а вес последнего предмета пусть будет 3
             double targetGpa = 4.5;
             double lastWeight = 3.0;
-
             double neededGrade = _gpaCalculator.PredictNeededGrade(Subjects, targetGpa, lastWeight);
 
             if (neededGrade > 5.0)
-            {
-                PredictionText = $"Увы, для GPA {targetGpa} нужна оценка {neededGrade:F2}, а максимум 5.0. Не тянете!";
-            }
+                PredictionText = $"Увы, для GPA {targetGpa} нужна оценка {neededGrade:F2}, а максимум 5.0!";
             else if (neededGrade < 2.0)
-            {
                 PredictionText = $"Вам достаточно получить {neededGrade:F2}, чтобы иметь GPA {targetGpa}. Вы молодец!";
-            }
             else
-            {
                 PredictionText = $"Для GPA {targetGpa} вам нужно получить {neededGrade:F2} за предмет (вес {lastWeight}).";
-            }
         }
     }
 }

@@ -4,9 +4,6 @@ using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {
-    // Этот класс наследует интерфейс IGpaCalculator.
-    // Принцип OCP: если формула изменится, мы создадим новый класс (например, EuropeanGpaCalculator),
-    // а этот не трогаем.
     public class GpaCalculatorService : IGpaCalculator
     {
         // Реализуем метод расчета GPA из интерфейса
@@ -15,9 +12,6 @@ namespace GPACalculator.Services
             // Если список пуст, возвращаем 0, чтобы избежать деления на ноль
             if (subjects == null || !subjects.Any())
                 return 0;
-
-            // Формула взвешенного среднего:
-            // Сумма (Оценка * Вес) / Сумма (Весов)
 
             // Считаем сумму произведений оценок на их веса
             double sumOfWeightedGrades = subjects.Sum(s => s.Grade * s.Weight);
@@ -35,13 +29,10 @@ namespace GPACalculator.Services
         // Реализуем метод прогноза итоговой оценки
         public double PredictNeededGrade(IEnumerable<Subject> currentSubjects, double targetGpa, double lastSubjectWeight)
         {
-            // Проверка деления на ноль СРАЗУ (fail-fast принцип)
+            // Проверка деления на ноль и если есть, то прекращение работы
             if (lastSubjectWeight == 0) return 0;
 
-            // Математика прогноза:
-            // Мы знаем, что итоговый GPA = (Сумма_текущих_баллов + Нужная_оценка * Вес_последнего) / (Сумма_текущих_весов + Вес_последнего)
-            // Выражаем отсюда Нужную_оценку.
-
+            // Расчёт нужной оценки.
             double currentWeightedSum = currentSubjects.Sum(s => s.Grade * s.Weight);
             double currentWeightSum = currentSubjects.Sum(s => s.Weight);
 

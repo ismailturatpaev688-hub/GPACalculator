@@ -1,25 +1,61 @@
-﻿namespace GPACalculator.Models
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+namespace GPACalculator.Models
 {
-    // Класс Subject (Предмет) представляет собой один предмет в нашем списке.
-    // Принцип SRP: этот класс отвечает ТОЛЬКО за хранение данных о предмете.
-    public class Subject
+    public class Subject : INotifyPropertyChanged
     {
-        // Название предмета (например, "Математика")
-        public string Name { get; set; }
+        private string _name;
+        private double _weight;
 
-        // Оценка, которую мы хотим получить или уже получили (от 2 до 5)
-        public double Grade { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string prop = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        // Вес предмета (кредиты или важность). 
-        // Например, курсовая весит 3, а обычная лекция 1.
-        public double Weight { get; set; }
-
-        // Конструктор — это способ создать объект с уже заполненными данными.
-        public Subject(string name, double grade, double weight)
+        // Основной конструктор
+        public Subject(string name, double weight)
         {
-            Name = name;
-            Grade = grade;
-            Weight = weight;
+            _name = name;
+            _weight = weight;
+
+            // Когда добавляется новая оценка, то пересчитывает оценки
+            Grades.CollectionChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(Grade));
+                OnPropertyChanged(nameof(GradesText));
+            };
         }
+
+        // Обратная совместимость
+        public Subject(string name, double grade, double weight) : this(name, weight)
+        {
+            Grades.Add(grade);
+        }
+
+        public string Name
+        {
+            get => _name;
+            set { _name = value; OnPropertyChanged(); }
+        }
+
+        public double Weight
+        {
+            get => _weight;
+            set { _weight = value; OnPropertyChanged(); }
+        }
+
+        // Все оценки по предмету
+        public ObservableCollection<double> Grades { get; } = new();
+
+        // Вычисляемый средний балл 
+        public double Grade => Grades.Count > 0 ? Grades.Average() : 0;
+
+        // Красивая строка для UI: "4.0, 5.0, 3.5"
+        public string GradesText => string.Join(", ", Grades.Select(g => g.ToString("F1")));
+
+        public void AddGrade(double grade) => Grades.Add(grade);
     }
 }

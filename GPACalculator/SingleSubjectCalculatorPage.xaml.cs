@@ -4,9 +4,10 @@ namespace GPACalculator;
 
 public partial class SingleSubjectCalculatorPage : ContentPage
 {
-	public SingleSubjectCalculatorPage(SingleSubjectCalculatorViewModel viewModel)
+    // Конструктор получает ViewModel
+    public SingleSubjectCalculatorPage(SingleSubjectCalculatorViewModel viewModel)
 	{
 		InitializeComponent();
-        BindingContext = viewModel;
+        BindingContext = viewModel; // Привязываем ViewModel к странице
     }
 }

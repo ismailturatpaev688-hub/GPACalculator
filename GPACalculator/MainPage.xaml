@@ -35,7 +35,7 @@
                            BackgroundColor="#FAFAFA"
                            Margin="0,0,0,10"/>
 
-                    <Entry Placeholder="Оценка (2.0 - 5.0)" 
+                    <Entry Placeholder="Оценка (2,0 - 5,0)" 
                            Keyboard="Numeric" 
                            Text="{Binding NewSubjectGrade, Mode=TwoWay}"
                            BackgroundColor="#FAFAFA"
@@ -106,28 +106,22 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Subject">
-                        <Border Stroke="#ECF0F1"
-                                StrokeShape="RoundRectangle 10"
-                                Padding="15"
-                                Margin="0,5"
-                                BackgroundColor="White">
-                            <HorizontalStackLayout Spacing="20" VerticalOptions="Center">
-                                <Label Text="{Binding Name}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="16"
-                                       TextColor="#2C3E50"
-                                       WidthRequest="150"
-                                       VerticalOptions="Center"/>
-                                <Label Text="{Binding Grade, StringFormat='{0}'}" 
-                                       FontSize="16"
-                                       TextColor="#E74C3C"
-                                       WidthRequest="80"
-                                       VerticalOptions="Center"/>
-                                <Label Text="{Binding Weight, StringFormat='Вес: {0}'}"
-                                       FontSize="14"
-                                       TextColor="#3498DB"
-                                       VerticalOptions="Center"/>
-                            </HorizontalStackLayout>
+                        <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10"
+                Padding="15" Margin="0,5" BackgroundColor="White">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="4">
+                                <!-- Название предмета -->
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" 
+                       FontAttributes="Bold" FontSize="16" TextColor="#2C3E50"/>
+                                <!-- Средний балл -->
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Grade, StringFormat='Ср: {0:F2}'}" 
+                       FontSize="16" FontAttributes="Bold" TextColor="#27AE60" VerticalOptions="Center"/>
+                                <!-- Все оценки -->
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding GradesText}" 
+                       FontSize="13" TextColor="#7F8C8D"/>
+                                <!-- Вес -->
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Weight, StringFormat='Вес: {0}'}" 
+                       FontSize="13" TextColor="#3498DB"/>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -17,32 +17,30 @@ namespace GPACalculator
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Регистрируем сервисы (синглтоны - один экземпляр на все приложение)
+            // Сервесы (синглтоны — общие для всего приложения)
             builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
+            builder.Services.AddSingleton<ISubjectDataService, SubjectDataService>();
 
-            // Главная страница и ViewModel
+            // Главная Страница
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainPage>();
 
-            builder.Services.AddSingleton<StatisticsViewModel>(sp =>
-            {
-                var calculator = sp.GetRequiredService<IGpaCalculator>();
-                var mainViewModel = sp.GetRequiredService<MainViewModel>();
-                return new StatisticsViewModel(calculator, mainViewModel);
-            });
+            // Страница Статистики
+            builder.Services.AddSingleton<StatisticsViewModel>();
             builder.Services.AddSingleton<StatisticsPage>();
 
-            // Страница "О программе"
+            // Страница о программе
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<AboutPage>();
 
-            // Страница расчета целевого GPA
+            // Страница цель GPA
             builder.Services.AddSingleton<TargetCalculatorPage>();
 
-            // Страница помощи
+            // Страница Помощь
             builder.Services.AddSingleton<HelpViewModel>();
             builder.Services.AddSingleton<HelpPage>();
 
+            // Страница расчета по одному предмету
             builder.Services.AddSingleton<SingleSubjectCalculatorViewModel>();
             builder.Services.AddSingleton<SingleSubjectCalculatorPage>();
 
