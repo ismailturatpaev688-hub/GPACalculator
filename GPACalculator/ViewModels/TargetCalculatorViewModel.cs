@@ -146,6 +146,15 @@ namespace GPACalculator.ViewModels
             // Считаем текущий GPA
             double currentGpa = _gpaCalculator.CalculateGpa(subjects);
 
+            // Если текущий GPA уже выше целевого
+            if (currentGpa >= targetGpa)
+            {
+                ResultText = $"Поздравляем! Ваш текущий GPA ({currentGpa:F2}) уже выше цели ({targetGpa}).";
+                AdviceText = "Вам не нужно получать дополнительные оценки. Продолжайте в том же духе!";
+                HasResult = true;
+                return;
+            }
+
             // Считаем общую сумму весов текущих предметов
             double currentWeightSum = subjects.Sum(s => s.Weight);
 
@@ -162,11 +171,32 @@ namespace GPACalculator.ViewModels
             // Необходимый средний балл за оставшиеся предметы
             double neededAverageGrade = (targetGpa * totalWeightSum - currentWeightedSum) / remainingWeightSum;
 
+            // Расчёт количества пятёрок для достижения цели
+            double numerator = targetGpa * currentWeightSum - currentWeightedSum;
+            double denominator = (5.0 * averageRemainingWeight) - (targetGpa * averageRemainingWeight);
+
+            int fivesCount = 0;
+            bool canReachWithFives = false;
+
+            if (denominator > 0)
+            {
+                double neededFives = numerator / denominator;
+                fivesCount = (int)Math.Ceiling(neededFives);
+                canReachWithFives = true;
+            }
+
             // Формируем результат
             if (neededAverageGrade > 5.0)
             {
                 ResultText = $"Нужен средний балл: {neededAverageGrade:F2}";
-                AdviceText = "Увы, это невозможно! Максимальная оценка 5.0. Попробуйте снизить целевой GPA или добавить больше предметов.";
+                if (canReachWithFives && fivesCount > 0)
+                {
+                    AdviceText = $"Это невозможно при {remaining} предметах, но если добавить ещё {fivesCount} пятёрок (вес {averageRemainingWeight}), цель будет достигнута.";
+                }
+                else
+                {
+                    AdviceText = "Увы, это невозможно! Максимальная оценка 5.0. Попробуйте снизить целевой GPA или добавить больше предметов.";
+                }
             }
             else if (neededAverageGrade < 2.0)
             {
@@ -181,7 +211,22 @@ namespace GPACalculator.ViewModels
             else
             {
                 ResultText = $"Нужен средний балл: {neededAverageGrade:F2}";
-                AdviceText = $"Вам нужно подтянуть успеваемость. Текущий GPA: {currentGpa:F2}. Сосредоточьтесь на предметах с большим весом!";
+                // Добавляем информацию о пятёрках
+                if (canReachWithFives && fivesCount > 0)
+                {
+                    if (fivesCount == 1)
+                    {
+                        AdviceText = $"Вам нужна 1 пятёрка (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
+                    }
+                    else
+                    {
+                        AdviceText = $"Вам нужно {fivesCount} пятёрок (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
+                    }
+                }
+                else
+                {
+                    AdviceText = $"Вам нужно подтянуть успеваемость. Текущий GPA: {currentGpa:F2}. Сосредоточьтесь на предметах с большим весом!";
+                }
             }
 
             HasResult = true;
