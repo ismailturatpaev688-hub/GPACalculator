@@ -32,10 +32,6 @@ namespace GPACalculator
             });
             builder.Services.AddSingleton<StatisticsPage>();
 
-            // Страница деталей предмета (создается новая каждый раз)
-            builder.Services.AddTransient<SubjectDetailViewModel>();
-            builder.Services.AddTransient<SubjectDetailPage>();
-
             // Страница "О программе"
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<AboutPage>();
@@ -48,6 +44,8 @@ namespace GPACalculator
             builder.Services.AddSingleton<HelpViewModel>();
             builder.Services.AddSingleton<HelpPage>();
 
+            builder.Services.AddSingleton<SingleSubjectCalculatorViewModel>();
+            builder.Services.AddSingleton<SingleSubjectCalculatorPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

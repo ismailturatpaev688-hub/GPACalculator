@@ -68,10 +68,10 @@
 	  <MauiXaml Update="HelpPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="StatisticsPage.xaml">
+	  <MauiXaml Update="SingleSubjectCalculatorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="SubjectDetailPage.xaml">
+	  <MauiXaml Update="StatisticsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="TargetCalculatorPage.xaml">

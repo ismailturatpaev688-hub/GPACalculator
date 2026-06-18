@@ -39,4 +39,9 @@
         ContentTemplate="{DataTemplate local:AboutPage}"
         Route="AboutPage" />
 
+    <ShellContent
+    Title="По предмету"
+    ContentTemplate="{DataTemplate local:SingleSubjectCalculatorPage}"
+    Route="SingleSubjectCalculatorPage" />
+
 </Shell>
