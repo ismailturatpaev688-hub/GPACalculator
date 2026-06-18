@@ -1,9 +1,12 @@
+using GPACalculator.ViewModels;
+
 namespace GPACalculator;
 
 public partial class SingleSubjectCalculatorPage : ContentPage
 {
-	public SingleSubjectCalculatorPage()
+	public SingleSubjectCalculatorPage(SingleSubjectCalculatorViewModel viewModel)
 	{
 		InitializeComponent();
-	}
+        BindingContext = viewModel;
+    }
 }

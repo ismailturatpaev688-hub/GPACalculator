@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace GPACalculator.ViewModels
 {
-    internal class SingleSubjectCalculatorViewModel
+    public class SingleSubjectCalculatorViewModel : BaseViewModel
     {
         // Поля для хранения данных
         private string _subjectName = "";
