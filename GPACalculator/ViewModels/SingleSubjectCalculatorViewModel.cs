@@ -116,7 +116,7 @@ namespace GPACalculator.ViewModels
             Grades.Clear();
             SubjectName = "";
             NewGrade = "";
-            Weight = "3";
+            Weight = "";
             ResultText = "Добавьте оценки для расчета";
             AverageGrade = 0;
         }

@@ -13,8 +13,8 @@ namespace GPACalculator.ViewModels
         private readonly MainViewModel _mainViewModel;
 
         // Поля для хранения данных
-        private string _targetGpa = "4.5";
-        private string _remainingSubjects = "3";
+        private string _targetGpa = "";
+        private string _remainingSubjects = "";
         private string _resultText = "";
         private string _adviceText = "";
         private string _currentGpaText = "";

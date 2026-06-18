@@ -25,14 +25,14 @@
 
                     <BoxView HeightRequest="1" Color="#ECF0F1" Margin="0,10"/>
 
-                    <Label Text="Описание" FontSize="18" FontAttributes="Bold" TextColor="#3498DB"/>
-                    <Label Text="{Binding Description}" FontSize="15" TextColor="#2C3E50" LineBreakMode="WordWrap"/>
+                    <Label Text="Описание" FontSize="18" FontAttributes="Bold" TextColor="#3498DB" HorizontalOptions="Center"/>
+                    <Label Text="{Binding Description}" FontSize="15" TextColor="#2C3E50" LineBreakMode="WordWrap" HorizontalOptions="Center"/>
 
                     <BoxView HeightRequest="1" Color="#ECF0F1" Margin="0,10"/>
 
-                    <Label Text="Разработчики" FontSize="18" FontAttributes="Bold" TextColor="#3498DB"/>
-                    <Label Text="{Binding Developers}" FontSize="16" TextColor="#2C3E50"/>
-                    <Label Text="{Binding Group, StringFormat='Учебная группа: {0}'}" FontSize="16" TextColor="#7F8C8D"/>
+                    <Label Text="Разработчики" FontSize="18" FontAttributes="Bold" TextColor="#3498DB" HorizontalOptions="Center"/>
+                    <Label Text="{Binding Developers}" FontSize="16" TextColor="#2C3E50" HorizontalOptions="Center"/>
+                    <Label Text="{Binding Group, StringFormat='Учебная группа: {0}'}" FontSize="16" TextColor="#7F8C8D" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>
