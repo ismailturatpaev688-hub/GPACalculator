@@ -9,6 +9,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="25" Spacing="20">
+
             <!-- Заголовок -->
             <Label Text="Помощь и инструкция" 
                    FontSize="32" 
@@ -28,7 +29,7 @@
                            FontAttributes="Bold"
                            TextColor="#3498DB"/>
 
-                    <Label Text="GPA (Grade Point Average) — это средний балл ваших оценок. Он рассчитывается с учетом веса (кредитов) каждого предмета." 
+                    <Label Text="GPA (Grade Point Average) — это средневзвешенный балл ваших оценок. Он рассчитывается с учётом веса (кредитов) каждого предмета и всех полученных по нему оценок." 
                            FontSize="15"
                            TextColor="#2C3E50"
                            LineBreakMode="WordWrap"/>
@@ -37,7 +38,7 @@
                             StrokeShape="RoundRectangle 10"
                             Padding="15"
                             BackgroundColor="#EAFAF1">
-                        <Label Text="Пример: Если у вас 2 предмета (Математика - вес 5, оценка 4 и Физика - вес 3, оценка 5), то GPA = (4×5 + 5×3) / (5+3) = 35/8 = 4.38" 
+                        <Label Text="Пример: Математика (вес 5, оценки 4 и 5) → средний 4.5; Физика (вес 3, оценка 5). GPA = (4.5×5 + 5×3) / (5+3) = 37.5/8 = 4.69" 
                                FontSize="14"
                                TextColor="#27AE60"
                                LineBreakMode="WordWrap"/>
@@ -45,7 +46,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Как пользоваться -->
+            <!-- Как пользоваться приложением -->
             <Border Stroke="#E0E0E0" 
                     StrokeShape="RoundRectangle 15" 
                     Padding="20"
@@ -70,7 +71,7 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>
                         </Border>
-                        <Label Text="На главной странице добавьте предметы: введите название, оценку (2-5) и вес предмета" 
+                        <Label Text="На главной странице добавьте предмет: введите название, оценку (2–5) и вес (1–5). Если предмет с таким названием уже есть — новая оценка просто добавится к нему." 
                                FontSize="15"
                                TextColor="#2C3E50"
                                VerticalOptions="Center"
@@ -91,7 +92,7 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>
                         </Border>
-                        <Label Text="Нажмите «Рассчитать GPA» чтобы увидеть ваш средний балл" 
+                        <Label Text="Или перейдите на вкладку «По предмету»: введите название и вес, добавьте несколько оценок подряд, а затем нажмите «Сохранить в общий список» — все оценки автоматически объединятся с главной страницей." 
                                FontSize="15"
                                TextColor="#2C3E50"
                                VerticalOptions="Center"
@@ -112,12 +113,121 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>
                         </Border>
-                        <Label Text="Используйте «Прогноз» чтобы узнать, какую оценку нужно получить для желаемого GPA" 
+                        <Label Text="Нажмите «Рассчитать GPA» на главной странице, чтобы увидеть ваш текущий средневзвешенный балл." 
                                FontSize="15"
                                TextColor="#2C3E50"
                                VerticalOptions="Center"
                                LineBreakMode="WordWrap"/>
                     </HorizontalStackLayout>
+
+                    <!-- Шаг 4 -->
+                    <HorizontalStackLayout Spacing="15">
+                        <Border Stroke="#9B59B6"
+                                StrokeShape="RoundRectangle 50"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                BackgroundColor="#9B59B6">
+                            <Label Text="4"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="Перейдите на вкладку «Статистика», чтобы увидеть полную аналитику: распределение оценок, лучший и худший предмет, учебную нагрузку и персональные рекомендации." 
+                               FontSize="15"
+                               TextColor="#2C3E50"
+                               VerticalOptions="Center"
+                               LineBreakMode="WordWrap"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Шаг 5 -->
+                    <HorizontalStackLayout Spacing="15">
+                        <Border Stroke="#9B59B6"
+                                StrokeShape="RoundRectangle 50"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                BackgroundColor="#9B59B6">
+                            <Label Text="5"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                        <Label Text="На вкладке «Цель» укажите желаемый GPA и количество оставшихся предметов — приложение рассчитает, какой средний балл вам нужен, чтобы достичь цели." 
+                               FontSize="15"
+                               TextColor="#2C3E50"
+                               VerticalOptions="Center"
+                               LineBreakMode="WordWrap"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Ключевые возможности -->
+            <Border Stroke="#E0E0E0" 
+                    StrokeShape="RoundRectangle 15" 
+                    Padding="20"
+                    BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Ключевые возможности" 
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="#3498DB"/>
+
+                    <!-- Возможность 1 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Автоматическое объединение предметов" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2C3E50"/>
+                        <Label Text="Если вы добавляете предмет с названием, которое уже есть в списке (например, «Математика»), новая оценка не создаст дубликат, а добавится к существующему предмету. В статистике вы увидите все оценки по порядку и их средний балл." 
+                               FontSize="14"
+                               TextColor="#7F8C8D"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#ECF0F1"/>
+
+                    <!-- Возможность 2 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Подробная статистика" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2C3E50"/>
+                        <Label Text="На странице «Статистика» отображаются: общий GPA, учебная нагрузка (сумма весов), лучший и худший предмет, визуальные прогресс-бары распределения оценок (5, 4, 3, 2) и умные рекомендации по улучшению успеваемости." 
+                               FontSize="14"
+                               TextColor="#7F8C8D"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#ECF0F1"/>
+
+                    <!-- Возможность 3 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Планирование цели" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2C3E50"/>
+                        <Label Text="Страница «Цель» позволяет задать желаемый итоговый GPA и количество оставшихся предметов. Приложение рассчитает, какой средний балл нужно получать, чтобы достичь цели, и покажет ваш текущий GPA для сравнения." 
+                               FontSize="14"
+                               TextColor="#7F8C8D"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#ECF0F1"/>
+
+                    <!-- Возможность 4 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Синхронизация между страницами" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2C3E50"/>
+                        <Label Text="Все данные хранятся в едином хранилище. Предметы, добавленные на главной странице или через «По предмету», автоматически появляются в статистике и учитываются при расчёте цели." 
+                               FontSize="14"
+                               TextColor="#7F8C8D"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
@@ -138,7 +248,7 @@
                                FontSize="16"
                                FontAttributes="Bold"
                                TextColor="#2C3E50"/>
-                        <Label Text="Вес (кредиты) показывает важность предмета. Например, курсовая работа может иметь вес 5, а обычная лекция - вес 2." 
+                        <Label Text="Вес (от 1 до 5) показывает важность или трудоёмкость предмета. Например, курсовая работа может иметь вес 5, а обычная лекция — вес 2. Чем больше вес, тем сильнее оценка влияет на итоговый GPA." 
                                FontSize="14"
                                TextColor="#7F8C8D"
                                LineBreakMode="WordWrap"/>
@@ -148,11 +258,11 @@
 
                     <!-- Вопрос 2 -->
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="Можно ли редактировать предметы?" 
+                        <Label Text="Что делать, если я ошибся с оценкой?" 
                                FontSize="16"
                                FontAttributes="Bold"
                                TextColor="#2C3E50"/>
-                        <Label Text="Да! Нажмите на предмет в списке чтобы отредактировать его на странице деталей." 
+                        <Label Text="Просто добавьте правильную оценку к тому же предмету — она учтётся в среднем балле. Старая оценка останется в истории, и вы сможете увидеть все оценки по предмету на главной странице и в статистике." 
                                FontSize="14"
                                TextColor="#7F8C8D"
                                LineBreakMode="WordWrap"/>
@@ -166,7 +276,21 @@
                                FontSize="16"
                                FontAttributes="Bold"
                                TextColor="#2C3E50"/>
-                        <Label Text="GPA 4.5-5.0 — отлично, 3.5-4.4 — хорошо, 2.0-3.4 — удовлетворительно, ниже 2.0 — нужно подтянуть учебу!" 
+                        <Label Text="GPA 4.75–5.0 — отличник (путь к красному диплому); 4.0–4.74 — хороший результат; 3.0–3.99 — средний уровень; ниже 3.0 — нужно срочно подтянуть учёбу. Точные рекомендации вы увидите на странице «Статистика»." 
+                               FontSize="14"
+                               TextColor="#7F8C8D"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#ECF0F1"/>
+
+                    <!-- Вопрос 4 -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Зачем нужна кнопка «Прогноз» на главной?" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="#2C3E50"/>
+                        <Label Text="Она быстро показывает, какую оценку нужно получить за следующий предмет (с весом 3), чтобы итоговый GPA стал 4.5. Для более точного планирования используйте вкладку «Цель»." 
                                FontSize="14"
                                TextColor="#7F8C8D"
                                LineBreakMode="WordWrap"/>
@@ -185,13 +309,14 @@
                            FontAttributes="Bold"
                            TextColor="#2980B9"
                            HorizontalOptions="Center"/>
-                    <Label Text="Используйте страницу «О программе» для информации о разработчиках" 
+                    <Label Text="Используйте страницу «О программе» для информации о разработчиках и версии приложения" 
                            FontSize="14"
                            TextColor="#2980B9"
                            HorizontalOptions="Center"
                            HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
             </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
