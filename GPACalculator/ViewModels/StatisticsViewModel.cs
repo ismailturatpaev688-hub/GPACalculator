@@ -162,7 +162,7 @@ namespace GPACalculator.ViewModels
         }
     }
 
-    // Модель для статистики по предмету — теперь с историей оценок
+    // Модель для статистики по предмету
     public class SubjectStats
     {
         public string Name { get; set; }
