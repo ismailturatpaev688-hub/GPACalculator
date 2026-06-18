@@ -36,9 +36,6 @@
 
             <!-- Поле веса -->
             <HorizontalStackLayout Spacing="10">
-                <Entry Placeholder="Название предмета" 
-                       Text="{Binding SubjectName, Mode=TwoWay}"
-                       BackgroundColor="#FAFAFA" HorizontalOptions="Fill"/>
                 <Entry Placeholder="Вес (1-5)" 
                        Text="{Binding Weight, Mode=TwoWay}"
                        Keyboard="Numeric" BackgroundColor="#FAFAFA" WidthRequest="90"/>

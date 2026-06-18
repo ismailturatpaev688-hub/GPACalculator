@@ -185,7 +185,7 @@
                            FontAttributes="Bold"
                            TextColor="#2980B9"
                            HorizontalOptions="Center"/>
-                    <Label Text="Обратитесь к преподавателю или используйте страницу «О программе» для информации о разработчиках" 
+                    <Label Text="Используйте страницу «О программе» для информации о разработчиках" 
                            FontSize="14"
                            TextColor="#2980B9"
                            HorizontalOptions="Center"
