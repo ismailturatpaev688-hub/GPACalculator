@@ -7,7 +7,6 @@ using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
 {
-    // ViewModel для страницы расчета цели
     public class TargetCalculatorViewModel : BaseViewModel
     {
         // Сервис для расчета GPA
@@ -102,7 +101,7 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Список всех студентов — для Picker
+        // Список всех студентов
         public ObservableCollection<Student> Students => _studentDataService.Students;
 
         // Выбранный студент

@@ -19,7 +19,7 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,10"/>
 
-            <!-- БЛОК ВЫБОРА СТУДЕНТА -->
+            <!-- Выбор студента -->
             <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#F4ECF7">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Выбор студента" 
@@ -35,7 +35,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Блок общего среднего балла и нагрузки -->
+            <!-- Общего среднего балла и нагрузки -->
             <Border Stroke="#27AE60" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#EAFAF1">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="{Binding AverageGpaText}" FontSize="24" TextColor="#27AE60" FontAttributes="Bold" HorizontalOptions="Center"/>
@@ -43,7 +43,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Общая информация о студентах и долгах -->
+            <!-- Информация о студентах и долгах -->
             <Border Stroke="#3498DB" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#EBF5FB">
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
                     <VerticalStackLayout Grid.Column="0" Spacing="5">
@@ -55,7 +55,7 @@
                 </Grid>
             </Border>
 
-            <!-- Блок посещаемости -->
+            <!-- Посещаемости -->
             <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#E8F8F5">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Посещаемость" FontSize="20" FontAttributes="Bold" TextColor="#16A085"/>
@@ -64,7 +64,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- БЛОК ДОЛГОВ ВЫБРАННОГО СТУДЕНТА -->
+            <!-- Долги выбронного студента -->
             <Border Stroke="#E74C3C" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
                     IsVisible="{Binding IsStudentSelected}">
                 <VerticalStackLayout Spacing="10">
@@ -96,7 +96,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- БЛОК ПОСЕЩАЕМОСТИ ВЫБРАННОГО СТУДЕНТА -->
+            <!-- Посещемость выбронного студента -->
             <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
                     IsVisible="{Binding IsStudentSelected}">
                 <VerticalStackLayout Spacing="10">
@@ -123,7 +123,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Инсайты (Лучший и худший предмет) -->
+            <!-- Лучший и худший предмет -->
             <Border Stroke="#F39C12" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#FEF9E7">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Ваши сильные и слабые стороны" FontSize="18" FontAttributes="Bold" TextColor="#D35400"/>
@@ -132,13 +132,13 @@
                         <Label Grid.Row="0" Grid.Column="0" Text="Сильная сторона:" FontAttributes="Bold" TextColor="#27AE60" VerticalOptions="Center"/>
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding BestSubjectText}" TextColor="#2C3E50" VerticalOptions="Center"/>
 
-                        <Label Grid.Row="1" Grid.Column="0" Text="Точка роста:" FontAttributes="Bold" TextColor="#E74C3C" VerticalOptions="Center"/>
+                        <Label Grid.Row="1" Grid.Column="0" Text="Слабая сторона:" FontAttributes="Bold" TextColor="#E74C3C" VerticalOptions="Center"/>
                         <Label Grid.Row="1" Grid.Column="1" Text="{Binding WorstSubjectText}" TextColor="#2C3E50" VerticalOptions="Center"/>
                     </Grid>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Блок распределения оценок с ProgressBar -->
+            <!-- Распределения оценок -->
             <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
                 <VerticalStackLayout Spacing="15">
                     <Label Text="Структура оценок" FontSize="20" FontAttributes="Bold" TextColor="#3498DB"/>

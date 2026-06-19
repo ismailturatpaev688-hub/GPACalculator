@@ -19,7 +19,7 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,20"/>
 
-            <!-- Блок добавления студента -->
+            <!-- Добавления студента -->
             <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
                 <VerticalStackLayout Spacing="15">
                     <Label Text="Добавить нового студента" 
@@ -108,7 +108,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

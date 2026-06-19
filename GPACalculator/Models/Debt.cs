@@ -2,7 +2,6 @@
 
 namespace GPACalculator.Models
 {
-    // Модель долга: предмет, описание и крайний срок
     public class Debt
     {
         public string SubjectName { get; set; }    // По какому предмету долг
@@ -12,7 +11,6 @@ namespace GPACalculator.Models
         // Проверка, просрочен ли долг
         public bool IsOverdue => DateTime.Now > DueDate;
 
-        // Красивое отображение
         public string DisplayText => $"{SubjectName}: {Description} (до {DueDate:dd.MM.yyyy})";
     }
 }

@@ -26,7 +26,7 @@ namespace GPACalculator.ViewModels
         private string _studentsCountText;
         private string _totalDebtsText;
 
-        // Выбранный студент (null = смотреть всех)
+        // Выбранный студент
         private Student _selectedStudent;
 
         // Публичные свойства
@@ -59,7 +59,7 @@ namespace GPACalculator.ViewModels
         public string StudentsCountText { get => _studentsCountText; set { _studentsCountText = value; OnPropertyChanged(); } }
         public string TotalDebtsText { get => _totalDebtsText; set { _totalDebtsText = value; OnPropertyChanged(); } }
 
-        // Список всех студентов — для Picker
+        // Список всех студентов
         public ObservableCollection<Student> Students => _studentDataService.Students;
 
         // Выбранный студент
@@ -79,7 +79,7 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Удобное свойство для UI: выбран ли конкретный студент
+        // Выбран ли конкретный студент
         public bool IsStudentSelected => SelectedStudent != null;
 
         // Команды
@@ -104,14 +104,14 @@ namespace GPACalculator.ViewModels
             SubjectStatsList.Clear();
             CountFives = CountFours = CountThrees = CountTwos = 0;
 
-            // Если выбран конкретный студент — работаем только с ним
+            // Если выбран конкретный студент
             if (SelectedStudent != null)
             {
                 LoadStudentStatistics(SelectedStudent);
                 return;
             }
 
-            // Иначе — общая статистика по всем студентам
+            // Если общая статистика по всем студентам
             var allSubjects = _studentDataService.Students.SelectMany(s => s.Subjects).ToList();
             var allAttendances = _studentDataService.Students.SelectMany(s => s.Attendances).ToList();
             int totalDebts = _studentDataService.Students.Sum(s => s.Debts.Count);
@@ -140,9 +140,11 @@ namespace GPACalculator.ViewModels
             foreach (var subject in allSubjects)
             {
                 totalWeight += subject.Weight;
+                // Находит предмет с лучшей и худшей оценкой
                 if (best == null || subject.Grade > best.Grade) best = subject;
                 if (worst == null || subject.Grade < worst.Grade) worst = subject;
 
+                // Подсчитывает количество оценок 5, 4, 3 и 2 по всем предметам.
                 foreach (var g in subject.Grades)
                 {
                     int rounded = (int)Math.Round(g, MidpointRounding.AwayFromZero);
@@ -154,7 +156,7 @@ namespace GPACalculator.ViewModels
                         case 2: CountTwos++; break;
                     }
                 }
-
+                // Добавление в список
                 SubjectStatsList.Add(new SubjectStats
                 {
                     Name = subject.Name,
@@ -165,13 +167,14 @@ namespace GPACalculator.ViewModels
                 });
             }
 
+            // Вышитывает общую количество оценок
             int total = CountFives + CountFours + CountThrees + CountTwos;
             TotalGradesText = $"Всего оценок: {total}";
-            TotalWeightText = $"Общая учебная нагрузка: {totalWeight} весов";
 
             UpdateAttendanceStats(allAttendances);
             UpdateProgressBars();
 
+            // Преобразует данные об оценках в читаемый текст для отображения на экране.
             BestSubjectText = best != null ? $"{best.Name} ({best.Grade:F2})" : "—";
             WorstSubjectText = worst != null ? $"{worst.Name} ({worst.Grade:F2})" : "—";
 
@@ -321,6 +324,7 @@ namespace GPACalculator.ViewModels
             ExecuteLoadStatistics();
         }
 
+        // Высчитывает прогресс
         private void CalculateProgress(int count, int total, ref double progress, ref string text)
         {
             if (total > 0)
@@ -335,6 +339,7 @@ namespace GPACalculator.ViewModels
             }
         }
 
+        // Рекомендация
         private void GenerateSmartRecommendation(double gpa, Subject worst)
         {
             if (worst == null)

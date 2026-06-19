@@ -7,8 +7,7 @@ using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
 {
-    // ViewModel для страницы профиля конкретного студента
-    // Реализует IQueryAttributable, чтобы получать имя студента из маршрута
+    // IQueryAttributable позволяет классу обрабатывать данные которые передаются при навигации
     public class StudentProfileViewModel : BaseViewModel, IQueryAttributable
     {
         private readonly IStudentDataService _studentDataService;
@@ -58,7 +57,7 @@ namespace GPACalculator.ViewModels
             set { if (_statusText != value) { _statusText = value; OnPropertyChanged(); } }
         }
 
-        // Сам студент (устанавливается через ApplyQueryAsync)
+        // Сам студент
         public Student Student
         {
             get => _student;
@@ -75,17 +74,15 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Имя студента для заголовка
+        // Вывод параметров проверка на пустое значение 
         public string StudentName => Student?.Name ?? "—";
-        // Средний балл студента
         public string AverageGradeText => Student != null ? $"Средний балл: {Student.AverageGrade:F2}" : "Нет данных";
-        // Процент посещаемости
         public string AttendancePercentText => Student != null ? $"Посещаемость: {Student.AttendancePercent:F1}%" : "Нет данных";
 
         // Команды
         public ICommand AddDebtCommand { get; }
         public ICommand RemoveDebtCommand { get; }
-        // Команда посещаемости теперь принимает параметр (true/false)
+        // Команда посещаемости
         public ICommand AddAttendanceCommand { get; }
         public ICommand RemoveAttendanceCommand { get; }
 
@@ -99,8 +96,6 @@ namespace GPACalculator.ViewModels
             AddAttendanceCommand = new Command<object>(ExecuteAddAttendance);
             RemoveAttendanceCommand = new Command<Attendance>(ExecuteRemoveAttendance);
         }
-
-        // Метод из IQueryAttributable — вызывается при навигации с параметром
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("name", out object nameObj) && nameObj is string name)
@@ -142,7 +137,7 @@ namespace GPACalculator.ViewModels
             StatusText = "Долг удалён";
         }
 
-        // Команда принимает параметр: "True" или "False" (строка из XAML)
+        // Команда принимает параметр: "True" или "False"
         private void ExecuteAddAttendance(object parameter)
         {
             if (Student == null) { StatusText = "Студент не выбран"; return; }

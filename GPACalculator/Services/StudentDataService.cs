@@ -5,11 +5,12 @@ using GPACalculator.Models;
 
 namespace GPACalculator.Services
 {
-    // Реализация сервиса работы со студентами
     public class StudentDataService : IStudentDataService
     {
+        // Уведомляет об изменение
         public ObservableCollection<Student> Students { get; } = new();
 
+        // Методы добавления и удаления например: студента
         public Student AddStudent(string name)
         {
             name = name.Trim();

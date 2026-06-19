@@ -13,7 +13,6 @@ public partial class StatisticsPage : ContentPage
 
     protected override void OnAppearing()
     {
-        // Вызов базового класса
         base.OnAppearing();
         // Проверка типа
         if (BindingContext is StatisticsViewModel vm)

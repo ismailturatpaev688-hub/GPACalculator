@@ -14,24 +14,24 @@ namespace GPACalculator.ViewModels
         private readonly IGpaCalculator _gpaCalculator;
         private readonly IStudentDataService _studentDataService;
 
-        // ===== Поля для БЫСТРОГО добавления (один предмет + одна оценка) =====
+        // Поля для БЫСТРОГО добавления (один предмет + одна оценка)
         private string _newSubjectName = "";
         private string _newSubjectGrade = "";
         private string _newSubjectWeight = "";
 
-        // ===== Поля для ПАКЕТНОГО добавления (несколько оценок к одному предмету) =====
+        // Поля для ПАКЕТНОГО добавления (несколько оценок к одному предмету) 
         private string _batchSubjectName = "";
         private string _batchWeight = "";
         private string _batchNewGrade = "";
 
-        // ===== Общие поля =====
+        // Общие поля
         private string _gpaResultText = "Введите предметы и нажмите Рассчитать";
         private Student _selectedStudent;
 
         // Локальный список оценок для пакетного режима (до сохранения)
         public ObservableCollection<GradeEntry> BatchGrades { get; } = new();
 
-        // --- Свойства для пакетного добавления ---
+        // Свойства для пакетного добавления
         public string BatchSubjectName
         {
             get => _batchSubjectName;
@@ -48,7 +48,7 @@ namespace GPACalculator.ViewModels
             set { if (_batchNewGrade != value) { _batchNewGrade = value; OnPropertyChanged(); } }
         }
 
-        // --- Общие свойства ---
+        // Общие свойства
         public string GpaResultText
         {
             get => _gpaResultText;
@@ -74,14 +74,13 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Список всех студентов — для Picker
+        // Список всех студентов 
         public ObservableCollection<Student> Students => _studentDataService.Students;
 
         // Предметы выбранного студента
         public ObservableCollection<Subject> Subjects =>
             SelectedStudent?.Subjects ?? new ObservableCollection<Subject>();
 
-        // ===== Команды =====
         // Пакетное добавление
         public ICommand AddBatchGradeCommand { get; }
         public ICommand SaveBatchCommand { get; }
@@ -103,7 +102,7 @@ namespace GPACalculator.ViewModels
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
         }
 
-        // ========== ПАКЕТНОЕ ДОБАВЛЕНИЕ ==========
+        // Пакетное добавление
 
         // Добавление одной оценки в локальный список
         private void ExecuteAddBatchGrade()
@@ -189,8 +188,7 @@ namespace GPACalculator.ViewModels
             BatchWeight = "";
         }
 
-        // ========== РАСЧЁТ GPA ==========
-
+        // Расчет gpa
         private void ExecuteCalculateGpa()
         {
             if (SelectedStudent == null)
@@ -208,7 +206,7 @@ namespace GPACalculator.ViewModels
         }
     }
 
-    // Модель для одной оценки (используется в пакетном режиме)
+    // Модель для одной оценки
     public class GradeEntry
     {
         public double Grade { get; set; }

@@ -12,7 +12,7 @@
         ContentTemplate="{DataTemplate local:StudentsPage}"
         Route="StudentsPage" />
 
-    <!-- Главная страница (теперь включает и пакетное добавление) -->
+    <!-- Главная страница -->
     <ShellContent
         Title="Главная"
         ContentTemplate="{DataTemplate local:MainPage}"

@@ -17,11 +17,11 @@ namespace GPACalculator
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Сервисы (синглтоны — общие для всего приложения)
+            // Сервисы
             builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
             builder.Services.AddSingleton<IStudentDataService, StudentDataService>();
 
-            // Главная страница (теперь включает оба режима добавления)
+            // Главная страница
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainPage>();
 

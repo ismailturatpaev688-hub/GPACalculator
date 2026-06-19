@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 
 namespace GPACalculator.Models
 {
-    // Модель студента: содержит предметы, долги и посещаемость
     public class Student : INotifyPropertyChanged
     {
         private string _name;
@@ -43,7 +42,7 @@ namespace GPACalculator.Models
         // Вычисляемый средний балл по всем предметам студента
         public double AverageGrade => Subjects.Count > 0 ? Subjects.Average(s => s.Grade) : 0;
 
-        // Процент посещаемости (сколько раз был присутствующим)
+        // Процент посещаемости
         public double AttendancePercent => Attendances.Count > 0
             ? (double)Attendances.Count(a => a.IsPresent) * 100.0 / Attendances.Count
             : 0;
@@ -51,7 +50,6 @@ namespace GPACalculator.Models
         // Количество должностей
         public int DebtsCount => Debts.Count;
 
-        // Для отображения в списке: "Имя (GPA: 4.5)"
         public string DisplayText => $"{Name} — GPA: {AverageGrade:F2}";
     }
 }

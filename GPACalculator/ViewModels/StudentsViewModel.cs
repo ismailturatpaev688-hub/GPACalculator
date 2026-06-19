@@ -5,7 +5,6 @@ using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
 {
-    // ViewModel для страницы списка студентов
     public class StudentsViewModel : BaseViewModel
     {
         private readonly IStudentDataService _studentDataService;

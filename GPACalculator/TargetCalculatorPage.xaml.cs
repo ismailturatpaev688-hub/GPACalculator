@@ -5,7 +5,7 @@ namespace GPACalculator;
 
 public partial class TargetCalculatorPage : ContentPage
 {
-    // Конструктор получает ViewModel через DI
+    // Конструктор получает ViewModel
     public TargetCalculatorPage(TargetCalculatorViewModel viewModel)
     {
         InitializeComponent();

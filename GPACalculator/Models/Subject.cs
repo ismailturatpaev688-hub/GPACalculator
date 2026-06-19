@@ -53,7 +53,6 @@ namespace GPACalculator.Models
         // Вычисляемый средний балл 
         public double Grade => Grades.Count > 0 ? Grades.Average() : 0;
 
-        // Красивая строка для UI: "4.0, 5.0, 3.5"
         public string GradesText => string.Join(", ", Grades.Select(g => g.ToString("F1")));
 
         public void AddGrade(double grade) => Grades.Add(grade);

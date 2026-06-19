@@ -113,7 +113,7 @@
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>
                         </Border>
-                        <Label Text="Добавьте предметы двумя способами: «Быстрое добавление» — одна оценка за раз, или «Пакетное добавление» — несколько оценок сразу к одному предмету." 
+                        <Label Text="«Пакетное добавление» — несколько оценок сразу к одному предмету." 
                                FontSize="15"
                                TextColor="#2C3E50"
                                VerticalOptions="Center"
