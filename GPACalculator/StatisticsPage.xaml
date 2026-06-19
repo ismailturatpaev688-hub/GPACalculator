@@ -97,21 +97,43 @@
                             <DataTemplate x:DataType="viewModels:SubjectStats">
                                 <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10"
                                         Padding="15" Margin="0,5" BackgroundColor="#FAFAFA">
-                                    <VerticalStackLayout Spacing="5">
-                                        <!-- Название предмета -->
-                                        <Label Text="{Binding Name}" FontAttributes="Bold" 
-                                               FontSize="17" TextColor="#2C3E50"/>
-                                        <!-- Все оценки по порядку -->
-                                        <Label Text="{Binding GradesText, StringFormat='Оценки: {0}'}" 
-                                               FontSize="14" TextColor="#7F8C8D"/>
-                                        <!-- Средний балл и вес -->
-                                        <HorizontalStackLayout Spacing="20">
-                                            <Label Text="{Binding AverageGrade, StringFormat='Средний: {0:F2}'}" 
-                                                   FontSize="15" FontAttributes="Bold" TextColor="#27AE60"/>
-                                            <Label Text="{Binding Weight, StringFormat='Вес: {0}'}" 
-                                                   FontSize="14" TextColor="#3498DB"/>
-                                        </HorizontalStackLayout>
-                                    </VerticalStackLayout>
+                                    <!-- Grid с двумя колонками: слева информация, справа кнопка удаления -->
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                        <!-- Информация о предмете -->
+                                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                            <!-- Название предмета -->
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" 
+                                                   FontSize="17" TextColor="#2C3E50"/>
+                                            <!-- Все оценки по порядку -->
+                                            <Label Text="{Binding GradesText, StringFormat='Оценки: {0}'}" 
+                                                   FontSize="14" TextColor="#7F8C8D"/>
+                                            <!-- Средний балл и вес -->
+                                            <HorizontalStackLayout Spacing="20">
+                                                <Label Text="{Binding AverageGrade, StringFormat='Средний: {0:F2}'}" 
+                                                       FontSize="15" FontAttributes="Bold" TextColor="#27AE60"/>
+                                                <Label Text="{Binding Weight, StringFormat='Вес: {0}'}" 
+                                                       FontSize="14" TextColor="#3498DB"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <!-- Кнопка удаления предмета -->
+                                        <!-- Source={RelativeSource AncestorType=...} нужна, чтобы найти команду в ViewModel,
+                                             а не в текущем SubjectStats -->
+                                        <Button Grid.Column="1"
+                                                Text="✕"
+                                                FontSize="16"
+                                                FontAttributes="Bold"
+                                                TextColor="White"
+                                                BackgroundColor="#E74C3C"
+                                                WidthRequest="40"
+                                                HeightRequest="40"
+                                                CornerRadius="20"
+                                                Margin="16"
+                                                Padding="0"
+                                                VerticalOptions="Start"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StatisticsViewModel}}, Path=DeleteSubjectCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>

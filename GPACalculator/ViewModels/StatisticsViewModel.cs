@@ -46,7 +46,10 @@ namespace GPACalculator.ViewModels
         public string TextThrees { get => _textThrees; set { _textThrees = value; OnPropertyChanged(); } }
         public string TextTwos { get => _textTwos; set { _textTwos = value; OnPropertyChanged(); } }
 
+        // Команды
         public ICommand LoadStatisticsCommand { get; }
+        // Новая команда для удаления предмета
+        public ICommand DeleteSubjectCommand { get; }
 
 
         // Сохраняет данные и использует команду ExecuteLoadStatistics
@@ -55,6 +58,8 @@ namespace GPACalculator.ViewModels
             _gpaCalculator = gpaCalculator;
             _dataService = dataService;
             LoadStatisticsCommand = new Command(ExecuteLoadStatistics);
+            // Инициализируем команду удаления
+            DeleteSubjectCommand = new Command<SubjectStats>(ExecuteDeleteSubject);
         }
 
         private void ExecuteLoadStatistics()
@@ -102,12 +107,14 @@ namespace GPACalculator.ViewModels
                 }
 
                 // Формат данных: имя, все оценки, средний балл
+                // Передаём ссылку на оригинальный Subject, чтобы команда удаления могла его найти
                 SubjectStatsList.Add(new SubjectStats
                 {
                     Name = subject.Name,
                     GradesText = subject.GradesText,
                     AverageGrade = subject.Grade,
-                    Weight = subject.Weight
+                    Weight = subject.Weight,
+                    Subject = subject // Сохраняем ссылку на оригинал
                 });
             }
 
@@ -131,6 +138,20 @@ namespace GPACalculator.ViewModels
             WorstSubjectText = $"{worst.Name} ({worst.Grade:F2})";
 
             GenerateSmartRecommendation(totalGpa, worst);
+        }
+
+        // Обработчик команды удаления предмета
+        private void ExecuteDeleteSubject(SubjectStats stats)
+        {
+            // Проверяем, что передан валидный объект и есть ссылка на оригинальный Subject
+            if (stats?.Subject == null) return;
+
+            // Удаляем предмет из общего хранилища
+            // Поскольку Subjects — это ObservableCollection, UI на других страницах тоже обновится
+            _dataService.Subjects.Remove(stats.Subject);
+
+            // Пересчитываем всю статистику заново, чтобы отразить изменения
+            ExecuteLoadStatistics();
         }
 
         // Калькулятор прогресса
@@ -162,12 +183,13 @@ namespace GPACalculator.ViewModels
         }
     }
 
-    // Модель для статистики по предмету
+    // Модель для статистики по предмету: Наименование, оценка, средний бал, вес и удаления 
     public class SubjectStats
     {
         public string Name { get; set; }
         public string GradesText { get; set; }
         public double AverageGrade { get; set; }
         public double Weight { get; set; }
+        public Subject Subject { get; set; }
     }
 }
