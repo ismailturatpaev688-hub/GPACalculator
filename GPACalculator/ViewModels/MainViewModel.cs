@@ -117,15 +117,50 @@ namespace GPACalculator.ViewModels
                 return;
             }
             double targetGpa = 4.5;
-            double lastWeight = 3.0;
-            double neededGrade = _gpaCalculator.PredictNeededGrade(Subjects, targetGpa, lastWeight);
+            const double subjectWeight = 3.0;
+            double currentGpa = _gpaCalculator.CalculateGpa(Subjects);
 
-            if (neededGrade > 5.0)
-                PredictionText = $"Увы, для GPA {targetGpa} нужна оценка {neededGrade:F2}, а максимум 5.0!";
-            else if (neededGrade < 2.0)
-                PredictionText = $"Вам достаточно получить {neededGrade:F2}, чтобы иметь GPA {targetGpa}. Вы молодец!";
+            if (currentGpa >= targetGpa)
+            {
+                PredictionText = $"Поздравляем! Ваш текущий GPA ({currentGpa:F2}) уже выше цели ({targetGpa}). Пятёрки не нужны!";
+                return;
+            }
+
+            // Считаем текущую взвешенную сумму и сумму весов
+            double currentWeightedSum = Subjects.Sum(s => s.Grade * s.Weight);
+            double currentWeightSum = Subjects.Sum(s => s.Weight);
+
+            // Расчёта количества пятёрок
+            double numerator = targetGpa * currentWeightSum - currentWeightedSum;
+            double denominator = (5.0 * subjectWeight) - (targetGpa * subjectWeight);
+
+            // Проверяем, можно ли вообще достичь цели (знаменатель должен быть положительным)
+            if (denominator <= 0)
+            {
+                PredictionText = $"Невозможно достичь GPA {targetGpa} даже с бесконечным количеством пятёрок.";
+                return;
+            }
+
+            // Считаем количество пятёрок и округляем вверх до целого
+            double neededFives = numerator / denominator;
+            int fivesCount = (int)Math.Ceiling(neededFives);
+
+            // Проверяем, не слишком ли много пятёрок нужно (больше 20 — нереалистично)
+            if (fivesCount > 20)
+            {
+                PredictionText = $"Для GPA {targetGpa} нужно слишком много пятёрок ({fivesCount}). Попробуйте снизить цель.";
+                return;
+            }
+
+            // Формируем итоговое сообщение
+            if (fivesCount == 1)
+            {
+                PredictionText = $"Вам нужна 1 пятёрка для достижения GPA {targetGpa}.";
+            }
             else
-                PredictionText = $"Для GPA {targetGpa} вам нужно получить {neededGrade:F2} за предмет (вес {lastWeight}).";
+            {
+                PredictionText = $"Вам нужно {fivesCount} пятёрок для достижения GPA {targetGpa}.";
+            }
         }
     }
 }
