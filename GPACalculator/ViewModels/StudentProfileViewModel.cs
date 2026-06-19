@@ -22,7 +22,6 @@ namespace GPACalculator.ViewModels
         // Поля для добавления посещаемости
         private string _attendanceSubject = "";
         private DateTime _attendanceDate = DateTime.Now;
-        private bool _attendanceIsPresent = true;
 
         private string _statusText = "";
 
@@ -51,11 +50,6 @@ namespace GPACalculator.ViewModels
         {
             get => _attendanceDate;
             set { if (_attendanceDate != value) { _attendanceDate = value; OnPropertyChanged(); } }
-        }
-        public bool AttendanceIsPresent
-        {
-            get => _attendanceIsPresent;
-            set { if (_attendanceIsPresent != value) { _attendanceIsPresent = value; OnPropertyChanged(); } }
         }
 
         public string StatusText
@@ -91,6 +85,7 @@ namespace GPACalculator.ViewModels
         // Команды
         public ICommand AddDebtCommand { get; }
         public ICommand RemoveDebtCommand { get; }
+        // Команда посещаемости теперь принимает параметр (true/false)
         public ICommand AddAttendanceCommand { get; }
         public ICommand RemoveAttendanceCommand { get; }
 
@@ -100,7 +95,8 @@ namespace GPACalculator.ViewModels
 
             AddDebtCommand = new Command(ExecuteAddDebt);
             RemoveDebtCommand = new Command<Debt>(ExecuteRemoveDebt);
-            AddAttendanceCommand = new Command(ExecuteAddAttendance);
+            // Команда принимает параметр object, который мы преобразуем в bool
+            AddAttendanceCommand = new Command<object>(ExecuteAddAttendance);
             RemoveAttendanceCommand = new Command<Attendance>(ExecuteRemoveAttendance);
         }
 
@@ -146,7 +142,8 @@ namespace GPACalculator.ViewModels
             StatusText = "Долг удалён";
         }
 
-        private void ExecuteAddAttendance()
+        // Команда принимает параметр: "True" или "False" (строка из XAML)
+        private void ExecuteAddAttendance(object parameter)
         {
             if (Student == null) { StatusText = "Студент не выбран"; return; }
             if (string.IsNullOrWhiteSpace(AttendanceSubject))
@@ -155,9 +152,20 @@ namespace GPACalculator.ViewModels
                 return;
             }
 
-            _studentDataService.AddAttendance(Student, AttendanceSubject, AttendanceDate, AttendanceIsPresent);
+            // Преобразуем параметр в bool
+            bool isPresent = false;
+            if (parameter is string strParam)
+            {
+                bool.TryParse(strParam, out isPresent);
+            }
+            else if (parameter is bool boolParam)
+            {
+                isPresent = boolParam;
+            }
+
+            _studentDataService.AddAttendance(Student, AttendanceSubject, AttendanceDate, isPresent);
             AttendanceSubject = "";
-            StatusText = AttendanceIsPresent ? "Запись о присутствии добавлена" : "Запись об отсутствии добавлена";
+            StatusText = isPresent ? "Запись о присутствии добавлена" : "Запись об отсутствии добавлена";
         }
 
         private void ExecuteRemoveAttendance(Attendance attendance)

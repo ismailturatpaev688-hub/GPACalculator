@@ -120,7 +120,7 @@ namespace GPACalculator.ViewModels
             int totalDebts = _studentDataService.Students.Sum(s => s.Debts.Count);
 
             StudentsCountText = $"Всего студентов: {_studentDataService.Students.Count}";
-            TotalDebtsText = $"Всего должностей: {totalDebts}";
+            TotalDebtsText = $"Всего долгов: {totalDebts}";
 
             if (allSubjects.Count == 0)
             {
@@ -170,7 +170,6 @@ namespace GPACalculator.ViewModels
 
             int total = CountFives + CountFours + CountThrees + CountTwos;
             TotalGradesText = $"Всего оценок: {total}";
-            TotalWeightText = $"Общая учебная нагрузка: {totalWeight} весов";
 
             UpdateAttendanceStats(allAttendances);
             UpdateProgressBars();
@@ -238,7 +237,6 @@ namespace GPACalculator.ViewModels
 
             int total = CountFives + CountFours + CountThrees + CountTwos;
             TotalGradesText = $"Всего оценок: {total}";
-            TotalWeightText = $"Учебная нагрузка: {totalWeight} весов";
 
             UpdateAttendanceStats(attendances);
             UpdateProgressBars();
