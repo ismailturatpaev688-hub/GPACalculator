@@ -18,7 +18,7 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,20"/>
 
-            <!-- НОВЫЙ БЛОК: Выбор студента -->
+            <!-- БЛОК ВЫБОРА СТУДЕНТА -->
             <Border Stroke="#9B59B6" 
                     StrokeShape="RoundRectangle 15" 
                     Padding="20"
@@ -34,50 +34,95 @@
                             Title="Выберите студента..."
                             BackgroundColor="White"
                             TextColor="#2C3E50"/>
-                    <Label Text="Предметы и оценки будут добавлены выбранному студенту."
+                    <Label Text="Все действия будут выполняться для выбранного студента."
                            FontSize="12"
                            TextColor="#7F8C8D"/>
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Блок ввода данных -->
+            <!-- БЛОК ПАКЕТНОЕ ДОБАВЛЕНИЕ -->
             <Border Stroke="#E0E0E0" 
                     StrokeShape="RoundRectangle 15" 
                     Padding="20"
                     BackgroundColor="White">
                 <VerticalStackLayout Spacing="15">
-                    <Label Text="Добавить предмет" 
+                    <Label Text="Пакетное добавление оценок" 
                            FontSize="18"
                            FontAttributes="Bold"
-                           TextColor="#3498DB"
-                           Margin="0,0,0,10"/>
+                           TextColor="#3498DB"/>
+                    <Label Text="Добавьте несколько оценок к одному предмету сразу."
+                           FontSize="12"
+                           TextColor="#7F8C8D"/>
 
                     <Entry Placeholder="Название предмета" 
-                           Text="{Binding NewSubjectName, Mode=TwoWay}"
-                           BackgroundColor="#FAFAFA"
-                           Margin="0,0,0,10"/>
+                           Text="{Binding BatchSubjectName, Mode=TwoWay}"
+                           BackgroundColor="#FAFAFA"/>
 
-                    <Entry Placeholder="Оценка (2,0 - 5,0)" 
+                    <Entry Placeholder="Вес предмета (1 - 5)" 
                            Keyboard="Numeric" 
-                           Text="{Binding NewSubjectGrade, Mode=TwoWay}"
-                           BackgroundColor="#FAFAFA"
-                           Margin="0,0,0,10"/>
+                           Text="{Binding BatchWeight, Mode=TwoWay}"
+                           BackgroundColor="#FAFAFA"/>
 
-                    <Entry Placeholder="Вес предмета" 
-                           Keyboard="Numeric" 
-                           Text="{Binding NewSubjectWeight, Mode=TwoWay}"
-                           BackgroundColor="#FAFAFA"
-                           Margin="0,0,0,10"/>
+                    <!-- Добавление оценок по одной -->
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry Placeholder="Оценка (2-5)" 
+                               Text="{Binding BatchNewGrade, Mode=TwoWay}"
+                               Keyboard="Numeric"
+                               BackgroundColor="#FAFAFA"
+                               WidthRequest="150"/>
 
-                    <Button Text="Добавить предмет" 
-                            Command="{Binding AddSubjectCommand}"
-                            BackgroundColor="#27AE60"
-                            TextColor="White"
-                            FontAttributes="Bold"
-                            FontSize="16"
-                            HeightRequest="50"
-                            CornerRadius="10"
-                            Margin="0,10,0,0"/>
+                        <Button Text="Добавить" 
+                                Command="{Binding AddBatchGradeCommand}"
+                                BackgroundColor="#27AE60"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                HeightRequest="45"
+                                CornerRadius="8"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Список локально добавленных оценок -->
+                    <FlexLayout Wrap="Wrap" 
+                                AlignItems="Center"
+                                JustifyContent="Start"
+                                BindableLayout.ItemsSource="{Binding BatchGrades}"
+                                IsVisible="{Binding BatchGrades.Count, Converter={StaticResource IntToBoolConverter}}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:GradeEntry">
+                                <Border Stroke="#3498DB"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12,6"
+                                        Margin="5"
+                                        BackgroundColor="#EBF5FB">
+                                    <Label Text="{Binding DisplayText}" 
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="#2980B9"/>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+
+                    <!-- Кнопки управления пакетным режимом -->
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Сохранить студенту" 
+                                Command="{Binding SaveBatchCommand}"
+                                BackgroundColor="#27AE60"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                FontSize="15"
+                                HeightRequest="50"
+                                CornerRadius="10"
+                                WidthRequest="200"/>
+                        <Button Text="Очистить" 
+                                Command="{Binding ClearBatchCommand}"
+                                BackgroundColor="#95A5A6"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                FontSize="15"
+                                HeightRequest="50"
+                                CornerRadius="10"
+                                WidthRequest="120"/>
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
 
@@ -144,39 +189,27 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <!-- Блок кнопок расчета -->
-            <HorizontalStackLayout Spacing="15" 
-                                   HorizontalOptions="Center"
-                                   Margin="0,10,0,15">
-                <Button Text="Рассчитать GPA" 
-                        Command="{Binding CalculateGpaCommand}"
-                        BackgroundColor="#3498DB"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="15"
-                        HeightRequest="50"
-                        CornerRadius="10"
-                        WidthRequest="160"/>
+            <!-- Кнопка расчёта GPA -->
+            <Button Text="Рассчитать GPA" 
+                    Command="{Binding CalculateGpaCommand}"
+                    BackgroundColor="#3498DB"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="55"
+                    CornerRadius="10"
+                    WidthRequest="250"
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,15"/>
 
-                <Button Text="Прогноз" 
-                        Command="{Binding PredictGradeCommand}"
-                        BackgroundColor="#9B59B6"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="15"
-                        HeightRequest="50"
-                        CornerRadius="10"
-                        WidthRequest="160"/>
-            </HorizontalStackLayout>
-
-            <!-- Блок вывода результатов -->
+            <!-- Блок вывода результата -->
             <Border Stroke="#3498DB"
                     StrokeShape="RoundRectangle 15"
                     Padding="25"
                     BackgroundColor="White">
                 <VerticalStackLayout Spacing="15">
-                    <Label Text="Результаты"
-                           FontSize="30"
+                    <Label Text="Результат"
+                           FontSize="28"
                            FontAttributes="Bold"
                            TextColor="#2C3E50"
                            HorizontalOptions="Center"/>
@@ -190,14 +223,8 @@
                            FontAttributes="Bold"
                            TextColor="#27AE60"
                            HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
                            LineBreakMode="WordWrap"/>
-
-                    <Label Text="{Binding PredictionText}" 
-                           FontSize="16"
-                           TextColor="#8E44AD"
-                           HorizontalOptions="Center"
-                           LineBreakMode="WordWrap"
-                           Margin="0,10,0,0"/>
                 </VerticalStackLayout>
             </Border>
 

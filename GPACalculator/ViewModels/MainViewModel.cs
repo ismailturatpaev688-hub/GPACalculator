@@ -1,5 +1,7 @@
 ﻿using GPACalculator.Models;
 using GPACalculator.Services;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
@@ -13,14 +15,24 @@ namespace GPACalculator.ViewModels
         private readonly ISubjectDataService _dataService;
         private readonly IStudentDataService _studentDataService;
 
-        // Приватные поля
+        // ===== Поля для БЫСТРОГО добавления (один предмет + одна оценка) =====
         private string _newSubjectName = "";
         private string _newSubjectGrade = "";
         private string _newSubjectWeight = "";
+
+        // ===== Поля для ПАКЕТНОГО добавления (несколько оценок к одному предмету) =====
+        private string _batchSubjectName = "";
+        private string _batchWeight = "";
+        private string _batchNewGrade = "";
+
+        // ===== Общие поля =====
         private string _gpaResultText = "Введите предметы и нажмите Рассчитать";
-        private string _predictionText = "";
         private Student _selectedStudent;
 
+        // Локальный список оценок для пакетного режима (до сохранения)
+        public ObservableCollection<GradeEntry> BatchGrades { get; } = new();
+
+        // --- Свойства для быстрого добавления ---
         public string NewSubjectName
         {
             get => _newSubjectName;
@@ -36,15 +48,29 @@ namespace GPACalculator.ViewModels
             get => _newSubjectWeight;
             set { if (_newSubjectWeight != value) { _newSubjectWeight = value; OnPropertyChanged(); } }
         }
+
+        // --- Свойства для пакетного добавления ---
+        public string BatchSubjectName
+        {
+            get => _batchSubjectName;
+            set { if (_batchSubjectName != value) { _batchSubjectName = value; OnPropertyChanged(); } }
+        }
+        public string BatchWeight
+        {
+            get => _batchWeight;
+            set { if (_batchWeight != value) { _batchWeight = value; OnPropertyChanged(); } }
+        }
+        public string BatchNewGrade
+        {
+            get => _batchNewGrade;
+            set { if (_batchNewGrade != value) { _batchNewGrade = value; OnPropertyChanged(); } }
+        }
+
+        // --- Общие свойства ---
         public string GpaResultText
         {
             get => _gpaResultText;
             set { if (_gpaResultText != value) { _gpaResultText = value; OnPropertyChanged(); } }
-        }
-        public string PredictionText
-        {
-            get => _predictionText;
-            set { if (_predictionText != value) { _predictionText = value; OnPropertyChanged(); } }
         }
 
         // Выбранный студент — к нему добавляются предметы
@@ -69,13 +95,19 @@ namespace GPACalculator.ViewModels
         // Список всех студентов — для Picker
         public ObservableCollection<Student> Students => _studentDataService.Students;
 
-        // Предметы выбранного студента (если студент не выбран — пустой список)
+        // Предметы выбранного студента
         public ObservableCollection<Subject> Subjects =>
             SelectedStudent?.Subjects ?? new ObservableCollection<Subject>();
 
+        // ===== Команды =====
+        // Быстрое добавление
         public ICommand AddSubjectCommand { get; }
+        // Пакетное добавление
+        public ICommand AddBatchGradeCommand { get; }
+        public ICommand SaveBatchCommand { get; }
+        public ICommand ClearBatchCommand { get; }
+        // Расчёт
         public ICommand CalculateGpaCommand { get; }
-        public ICommand PredictGradeCommand { get; }
 
         public MainViewModel(IGpaCalculator gpaCalculator,
                              ISubjectDataService dataService,
@@ -85,10 +117,17 @@ namespace GPACalculator.ViewModels
             _dataService = dataService;
             _studentDataService = studentDataService;
 
+            // Быстрое добавление
             AddSubjectCommand = new Command(ExecuteAddSubject);
+            // Пакетное добавление
+            AddBatchGradeCommand = new Command(ExecuteAddBatchGrade);
+            SaveBatchCommand = new Command(ExecuteSaveBatch);
+            ClearBatchCommand = new Command(ExecuteClearBatch);
+            // Расчёт
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
-            PredictGradeCommand = new Command(ExecutePredictGrade);
         }
+
+        // ========== БЫСТРОЕ ДОБАВЛЕНИЕ ==========
 
         private void ExecuteAddSubject()
         {
@@ -120,7 +159,6 @@ namespace GPACalculator.ViewModels
                 }
 
                 // Добавляем предмет к ВЫБРАННОМУ студенту
-                // Используем вспомогательный метод, который ищет предмет в Subjects студента
                 AddSubjectToStudent(SelectedStudent, NewSubjectName, grade, weight);
 
                 NewSubjectName = "";
@@ -141,7 +179,7 @@ namespace GPACalculator.ViewModels
             name = name.Trim();
             // Ищем предмет у этого студента
             var existing = student.Subjects.FirstOrDefault(s =>
-                s.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase));
+                s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             if (existing != null)
             {
@@ -156,6 +194,94 @@ namespace GPACalculator.ViewModels
                 student.Subjects.Add(subject);
             }
         }
+
+        // ========== ПАКЕТНОЕ ДОБАВЛЕНИЕ ==========
+
+        // Добавление одной оценки в локальный список
+        private void ExecuteAddBatchGrade()
+        {
+            if (double.TryParse(BatchNewGrade, out double grade))
+            {
+                if (grade >= 2 && grade <= 5)
+                {
+                    BatchGrades.Add(new GradeEntry { Grade = grade, DisplayText = grade.ToString("F1") });
+                    BatchNewGrade = "";
+                }
+                else
+                {
+                    GpaResultText = "Ошибка: оценка должна быть от 2 до 5";
+                }
+            }
+            else
+            {
+                GpaResultText = "Ошибка: введите корректное число";
+            }
+        }
+
+        // Сохранение всех локальных оценок выбранному студенту
+        private void ExecuteSaveBatch()
+        {
+            if (SelectedStudent == null)
+            {
+                GpaResultText = "Сначала выберите студента!";
+                return;
+            }
+            if (BatchGrades.Count == 0)
+            {
+                GpaResultText = "Нечего сохранять — добавьте хотя бы одну оценку!";
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(BatchSubjectName))
+            {
+                GpaResultText = "Введите название предмета!";
+                return;
+            }
+            if (!double.TryParse(BatchWeight, out double w) || w < 1 || w > 5)
+            {
+                GpaResultText = "Вес должен быть числом от 1 до 5!";
+                return;
+            }
+
+            // Добавляем все оценки к предмету выбранного студента
+            var grades = new List<double>();
+            foreach (var g in BatchGrades) grades.Add(g.Grade);
+            AddGradesToStudent(SelectedStudent, BatchSubjectName, grades, w);
+
+            GpaResultText = $"Сохранено студенту '{SelectedStudent.Name}'! Оценок передано: {grades.Count}";
+
+            // Очищаем локальный список и поля
+            ExecuteClearBatch();
+        }
+
+        // Вспомогательный метод: добавляет несколько оценок к предмету студента
+        private void AddGradesToStudent(Student student, string name, IEnumerable<double> grades, double weight)
+        {
+            name = name.Trim();
+            var existing = student.Subjects.FirstOrDefault(s =>
+                s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
+            {
+                foreach (var g in grades) existing.AddGrade(g);
+            }
+            else
+            {
+                var subject = new Subject(name, weight);
+                foreach (var g in grades) subject.AddGrade(g);
+                student.Subjects.Add(subject);
+            }
+        }
+
+        // Очистка локального списка оценок
+        private void ExecuteClearBatch()
+        {
+            BatchGrades.Clear();
+            BatchSubjectName = "";
+            BatchNewGrade = "";
+            BatchWeight = "";
+        }
+
+        // ========== РАСЧЁТ GPA ==========
 
         private void ExecuteCalculateGpa()
         {
@@ -172,55 +298,12 @@ namespace GPACalculator.ViewModels
             double gpa = _gpaCalculator.CalculateGpa(Subjects);
             GpaResultText = $"GPA студента '{SelectedStudent.Name}': {gpa:F2}";
         }
+    }
 
-        private void ExecutePredictGrade()
-        {
-            if (SelectedStudent == null)
-            {
-                PredictionText = "Сначала выберите студента!";
-                return;
-            }
-            if (Subjects.Count == 0)
-            {
-                PredictionText = $"Сначала добавьте предметы студенту '{SelectedStudent.Name}'.";
-                return;
-            }
-
-            double targetGpa = 4.5;
-            const double subjectWeight = 3.0;
-            double currentGpa = _gpaCalculator.CalculateGpa(Subjects);
-
-            if (currentGpa >= targetGpa)
-            {
-                PredictionText = $"Поздравляем! Текущий GPA студента ({currentGpa:F2}) уже выше цели ({targetGpa}). Пятёрки не нужны!";
-                return;
-            }
-
-            double currentWeightedSum = Subjects.Sum(s => s.Grade * s.Weight);
-            double currentWeightSum = Subjects.Sum(s => s.Weight);
-
-            double numerator = targetGpa * currentWeightSum - currentWeightedSum;
-            double denominator = (5.0 * subjectWeight) - (targetGpa * subjectWeight);
-
-            if (denominator <= 0)
-            {
-                PredictionText = $"Невозможно достичь GPA {targetGpa} даже с бесконечным количеством пятёрок.";
-                return;
-            }
-
-            double neededFives = numerator / denominator;
-            int fivesCount = (int)System.Math.Ceiling(neededFives);
-
-            if (fivesCount > 20)
-            {
-                PredictionText = $"Для GPA {targetGpa} нужно слишком много пятёрок ({fivesCount}). Попробуйте снизить цель.";
-                return;
-            }
-
-            if (fivesCount == 1)
-                PredictionText = $"Студенту '{SelectedStudent.Name}' нужна 1 пятёрка для достижения GPA {targetGpa}.";
-            else
-                PredictionText = $"Студенту '{SelectedStudent.Name}' нужно {fivesCount} пятёрок для достижения GPA {targetGpa}.";
-        }
+    // Модель для одной оценки (используется в пакетном режиме)
+    public class GradeEntry
+    {
+        public double Grade { get; set; }
+        public string DisplayText { get; set; }
     }
 }

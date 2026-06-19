@@ -10,6 +10,6 @@ namespace GPACalculator.Models
         public bool IsPresent { get; set; }       // true — присутствовал, false — отсутствовал
 
         // Красивое отображение
-        public string DisplayText => $"{SubjectName} — {Date:dd.MM.yyyy}: {(IsPresent ? "✓ был" : "✗ не был")}";
+        public string DisplayText => $"{SubjectName} — {Date:dd.MM.yyyy}: {(IsPresent ? "был" : "не был")}";
     }
 }

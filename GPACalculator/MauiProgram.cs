@@ -22,7 +22,7 @@ namespace GPACalculator
             builder.Services.AddSingleton<ISubjectDataService, SubjectDataService>();
             builder.Services.AddSingleton<IStudentDataService, StudentDataService>();
 
-            // Главная страница
+            // Главная страница (теперь включает оба режима добавления)
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainPage>();
 
@@ -34,17 +34,13 @@ namespace GPACalculator
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<AboutPage>();
 
-            // Страница цели GPA (теперь с DI)
+            // Страница цели GPA
             builder.Services.AddSingleton<TargetCalculatorViewModel>();
             builder.Services.AddSingleton<TargetCalculatorPage>();
 
             // Страница помощи
             builder.Services.AddSingleton<HelpViewModel>();
             builder.Services.AddSingleton<HelpPage>();
-
-            // Страница расчёта по одному предмету
-            builder.Services.AddSingleton<SingleSubjectCalculatorViewModel>();
-            builder.Services.AddSingleton<SingleSubjectCalculatorPage>();
 
             // Страница студентов и профиль студента
             builder.Services.AddSingleton<StudentsViewModel>();

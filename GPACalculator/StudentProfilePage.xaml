@@ -81,11 +81,11 @@
                         <DatePicker Date="{Binding AttendanceDate, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
                     </VerticalStackLayout>
                     <HorizontalStackLayout Spacing="15">
-                        <Button Text="✓ Был" Command="{Binding AddAttendanceCommand}"
+                        <Button Text="Был" Command="{Binding AddAttendanceCommand}"
                                 BackgroundColor="#27AE60" TextColor="White" FontAttributes="Bold"
                                 FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"
                                 Clicked="OnMarkPresent"/>
-                        <Button Text="✗ Не был" Command="{Binding AddAttendanceCommand}"
+                        <Button Text="Не был" Command="{Binding AddAttendanceCommand}"
                                 BackgroundColor="#E74C3C" TextColor="White" FontAttributes="Bold"
                                 FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"
                                 Clicked="OnMarkAbsent"/>

@@ -6,23 +6,17 @@
     xmlns:local="clr-namespace:GPACalculator"
     Title="GPACalculator">
 
-    <!-- Студенты (новая вкладка) -->
+    <!-- Студенты -->
     <ShellContent
         Title="Студенты"
         ContentTemplate="{DataTemplate local:StudentsPage}"
         Route="StudentsPage" />
 
-    <!-- Главная страница -->
+    <!-- Главная страница (теперь включает и пакетное добавление) -->
     <ShellContent
         Title="Главная"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
-
-    <!-- По предмету -->
-    <ShellContent
-        Title="По предмету"
-        ContentTemplate="{DataTemplate local:SingleSubjectCalculatorPage}"
-        Route="SingleSubjectCalculatorPage" />
 
     <!-- Статистика -->
     <ShellContent
