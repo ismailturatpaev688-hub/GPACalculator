@@ -54,9 +54,9 @@
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label Text="{Binding SubjectName}" FontAttributes="Bold" FontSize="15" TextColor="#2C3E50"/>
                                             <Label Text="{Binding Description}" FontSize="13" TextColor="#7F8C8D"/>
+                                            <!-- Без конвертера: просто красный цвет для всех дат -->
                                             <Label Text="{Binding DueDate, StringFormat='Сдать до: {0:dd.MM.yyyy}'}" 
-                                                   FontSize="12" 
-                                                   TextColor="{Binding IsOverdue, Converter={StaticResource BoolToColorConverter}}" />
+                                                   FontSize="12" TextColor="#E74C3C"/>
                                         </VerticalStackLayout>
                                         <Button Grid.Column="1" Text="✕" FontAttributes="Bold" TextColor="White"
                                                 BackgroundColor="#E74C3C" WidthRequest="35" HeightRequest="35"
@@ -80,8 +80,7 @@
                         <Label Text="Дата занятия" FontSize="14" TextColor="#7F8C8D"/>
                         <DatePicker Date="{Binding AttendanceDate, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
                     </VerticalStackLayout>
-                    <!-- ИСПРАВЛЕНО: используем CommandParameter вместо Clicked -->
-                    <!-- Теперь значение "был/не был" передаётся прямо в команду -->
+                    <!-- Значение "был/не был" передаётся через CommandParameter -->
                     <HorizontalStackLayout Spacing="15">
                         <Button Text="✓ Был" 
                                 Command="{Binding AddAttendanceCommand}"

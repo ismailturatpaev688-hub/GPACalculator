@@ -19,7 +19,7 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,10"/>
 
-            <!-- Выбор студента -->
+            <!-- БЛОК ВЫБОРА СТУДЕНТА -->
             <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#F4ECF7">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Выбор студента" 
@@ -35,10 +35,11 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- общего среднего балла и нагрузки -->
+            <!-- Блок общего среднего балла и нагрузки -->
             <Border Stroke="#27AE60" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#EAFAF1">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="{Binding AverageGpaText}" FontSize="24" TextColor="#27AE60" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="{Binding TotalWeightText}" FontSize="14" TextColor="#27AE60" HorizontalOptions="Center" Opacity="0.8"/>
                 </VerticalStackLayout>
             </Border>
 
@@ -63,7 +64,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- БЛОК ДОЛГОВ ВЫБРАННОГО СТУДЕНТА (показывается только если студент выбран) -->
+            <!-- БЛОК ДОЛГОВ ВЫБРАННОГО СТУДЕНТА -->
             <Border Stroke="#E74C3C" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
                     IsVisible="{Binding IsStudentSelected}">
                 <VerticalStackLayout Spacing="10">
@@ -95,7 +96,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- БЛОК ПОСЕЩАЕМОСТИ ВЫБРАННОГО СТУДЕНТА (показывается только если студент выбран) -->
+            <!-- БЛОК ПОСЕЩАЕМОСТИ ВЫБРАННОГО СТУДЕНТА -->
             <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
                     IsVisible="{Binding IsStudentSelected}">
                 <VerticalStackLayout Spacing="10">
@@ -131,7 +132,7 @@
                         <Label Grid.Row="0" Grid.Column="0" Text="Сильная сторона:" FontAttributes="Bold" TextColor="#27AE60" VerticalOptions="Center"/>
                         <Label Grid.Row="0" Grid.Column="1" Text="{Binding BestSubjectText}" TextColor="#2C3E50" VerticalOptions="Center"/>
 
-                        <Label Grid.Row="1" Grid.Column="0" Text="Слабая сторона:" FontAttributes="Bold" TextColor="#E74C3C" VerticalOptions="Center"/>
+                        <Label Grid.Row="1" Grid.Column="0" Text="Точка роста:" FontAttributes="Bold" TextColor="#E74C3C" VerticalOptions="Center"/>
                         <Label Grid.Row="1" Grid.Column="1" Text="{Binding WorstSubjectText}" TextColor="#2C3E50" VerticalOptions="Center"/>
                     </Grid>
                 </VerticalStackLayout>
@@ -231,7 +232,6 @@
                        FontSize="16" TextColor="#8E44AD"
                        HorizontalOptions="Center" HorizontalTextAlignment="Center" FontAttributes="Bold"/>
             </Border>
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

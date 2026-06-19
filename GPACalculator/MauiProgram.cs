@@ -19,7 +19,6 @@ namespace GPACalculator
 
             // Сервисы (синглтоны — общие для всего приложения)
             builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
-            builder.Services.AddSingleton<ISubjectDataService, SubjectDataService>();
             builder.Services.AddSingleton<IStudentDataService, StudentDataService>();
 
             // Главная страница (теперь включает оба режима добавления)

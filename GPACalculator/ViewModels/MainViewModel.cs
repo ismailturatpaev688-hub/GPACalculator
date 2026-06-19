@@ -12,7 +12,6 @@ namespace GPACalculator.ViewModels
     {
         // Сервисы
         private readonly IGpaCalculator _gpaCalculator;
-        private readonly ISubjectDataService _dataService;
         private readonly IStudentDataService _studentDataService;
 
         // ===== Поля для БЫСТРОГО добавления (один предмет + одна оценка) =====
@@ -31,23 +30,6 @@ namespace GPACalculator.ViewModels
 
         // Локальный список оценок для пакетного режима (до сохранения)
         public ObservableCollection<GradeEntry> BatchGrades { get; } = new();
-
-        // --- Свойства для быстрого добавления ---
-        public string NewSubjectName
-        {
-            get => _newSubjectName;
-            set { if (_newSubjectName != value) { _newSubjectName = value; OnPropertyChanged(); } }
-        }
-        public string NewSubjectGrade
-        {
-            get => _newSubjectGrade;
-            set { if (_newSubjectGrade != value) { _newSubjectGrade = value; OnPropertyChanged(); } }
-        }
-        public string NewSubjectWeight
-        {
-            get => _newSubjectWeight;
-            set { if (_newSubjectWeight != value) { _newSubjectWeight = value; OnPropertyChanged(); } }
-        }
 
         // --- Свойства для пакетного добавления ---
         public string BatchSubjectName
@@ -100,8 +82,6 @@ namespace GPACalculator.ViewModels
             SelectedStudent?.Subjects ?? new ObservableCollection<Subject>();
 
         // ===== Команды =====
-        // Быстрое добавление
-        public ICommand AddSubjectCommand { get; }
         // Пакетное добавление
         public ICommand AddBatchGradeCommand { get; }
         public ICommand SaveBatchCommand { get; }
@@ -110,89 +90,17 @@ namespace GPACalculator.ViewModels
         public ICommand CalculateGpaCommand { get; }
 
         public MainViewModel(IGpaCalculator gpaCalculator,
-                             ISubjectDataService dataService,
                              IStudentDataService studentDataService)
         {
             _gpaCalculator = gpaCalculator;
-            _dataService = dataService;
             _studentDataService = studentDataService;
 
-            // Быстрое добавление
-            AddSubjectCommand = new Command(ExecuteAddSubject);
             // Пакетное добавление
             AddBatchGradeCommand = new Command(ExecuteAddBatchGrade);
             SaveBatchCommand = new Command(ExecuteSaveBatch);
             ClearBatchCommand = new Command(ExecuteClearBatch);
             // Расчёт
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
-        }
-
-        // ========== БЫСТРОЕ ДОБАВЛЕНИЕ ==========
-
-        private void ExecuteAddSubject()
-        {
-            // Проверяем, выбран ли студент
-            if (SelectedStudent == null)
-            {
-                GpaResultText = "Ошибка: Сначала выберите студента!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(NewSubjectName))
-            {
-                GpaResultText = "Ошибка: Введите название предмета!";
-                return;
-            }
-
-            if (double.TryParse(NewSubjectGrade, out double grade) &&
-                double.TryParse(NewSubjectWeight, out double weight))
-            {
-                if (grade < 2.0 || grade > 5.0)
-                {
-                    GpaResultText = "Ошибка: Оценка должна быть числом от 2 до 5!";
-                    return;
-                }
-                if (weight < 1.0 || weight > 5.0)
-                {
-                    GpaResultText = "Ошибка: Вес предмета должен быть числом от 1 до 5!";
-                    return;
-                }
-
-                // Добавляем предмет к ВЫБРАННОМУ студенту
-                AddSubjectToStudent(SelectedStudent, NewSubjectName, grade, weight);
-
-                NewSubjectName = "";
-                NewSubjectGrade = "";
-                NewSubjectWeight = "";
-
-                GpaResultText = $"Предмет добавлен студенту '{SelectedStudent.Name}'!";
-            }
-            else
-            {
-                GpaResultText = "Ошибка: Оценка и вес должны быть числами!";
-            }
-        }
-
-        // Вспомогательный метод: добавляет предмет к студенту (или дописывает оценку, если предмет уже есть)
-        private void AddSubjectToStudent(Student student, string name, double grade, double weight)
-        {
-            name = name.Trim();
-            // Ищем предмет у этого студента
-            var existing = student.Subjects.FirstOrDefault(s =>
-                s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            if (existing != null)
-            {
-                // Предмет уже есть — дописываем оценку
-                existing.AddGrade(grade);
-            }
-            else
-            {
-                // Создаём новый предмет
-                var subject = new Subject(name, weight);
-                subject.AddGrade(grade);
-                student.Subjects.Add(subject);
-            }
         }
 
         // ========== ПАКЕТНОЕ ДОБАВЛЕНИЕ ==========

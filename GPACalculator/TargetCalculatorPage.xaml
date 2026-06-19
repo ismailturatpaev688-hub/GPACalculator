@@ -131,13 +131,22 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Подсказка если нет результата -->
+            <!-- Подсказка если нет результата (без конвертера — через Style.Triggers) -->
             <Border Stroke="#BDC3C7"
                     StrokeShape="RoundRectangle 10"
                     Padding="20"
-                    BackgroundColor="White"
-                    IsVisible="{Binding HasResult, Converter={StaticResource InverseBoolConverter}}">
-                <Label Text="Выберите студента, введите желаемый GPA и количество оставшихся предметов, чтобы увидеть какой средний балл вам нужен" 
+                    BackgroundColor="White">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="IsVisible" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding HasResult}" Value="True">
+                                <Setter Property="IsVisible" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Label Text="Выберите студента, введите желаемый GPA и количество оставшихся предметов" 
                        FontSize="14"
                        TextColor="#95A5A6"
                        HorizontalOptions="Center"

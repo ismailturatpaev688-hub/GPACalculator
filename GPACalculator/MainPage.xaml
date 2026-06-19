@@ -80,12 +80,11 @@
                                 CornerRadius="8"/>
                     </HorizontalStackLayout>
 
-                    <!-- Список локально добавленных оценок -->
+                    <!-- Список локально добавленных оценок (показывается всегда, если пусто — просто пусто) -->
                     <FlexLayout Wrap="Wrap" 
                                 AlignItems="Center"
                                 JustifyContent="Start"
-                                BindableLayout.ItemsSource="{Binding BatchGrades}"
-                                IsVisible="{Binding BatchGrades.Count, Converter={StaticResource IntToBoolConverter}}">
+                                BindableLayout.ItemsSource="{Binding BatchGrades}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="viewModels:GradeEntry">
                                 <Border Stroke="#3498DB"

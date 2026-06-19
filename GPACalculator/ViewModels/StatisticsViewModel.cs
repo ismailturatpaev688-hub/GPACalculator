@@ -11,7 +11,6 @@ namespace GPACalculator.ViewModels
     {
         // Сервисы
         private readonly IGpaCalculator _gpaCalculator;
-        private readonly ISubjectDataService _dataService;
         private readonly IStudentDataService _studentDataService;
 
         // Приватные поля
@@ -90,11 +89,9 @@ namespace GPACalculator.ViewModels
         public ICommand RemoveAttendanceCommand { get; }
 
         public StatisticsViewModel(IGpaCalculator gpaCalculator,
-                                   ISubjectDataService dataService,
                                    IStudentDataService studentDataService)
         {
             _gpaCalculator = gpaCalculator;
-            _dataService = dataService;
             _studentDataService = studentDataService;
             LoadStatisticsCommand = new Command(ExecuteLoadStatistics);
             DeleteSubjectCommand = new Command<SubjectStats>(ExecuteDeleteSubject);
@@ -170,6 +167,7 @@ namespace GPACalculator.ViewModels
 
             int total = CountFives + CountFours + CountThrees + CountTwos;
             TotalGradesText = $"Всего оценок: {total}";
+            TotalWeightText = $"Общая учебная нагрузка: {totalWeight} весов";
 
             UpdateAttendanceStats(allAttendances);
             UpdateProgressBars();
@@ -237,6 +235,7 @@ namespace GPACalculator.ViewModels
 
             int total = CountFives + CountFours + CountThrees + CountTwos;
             TotalGradesText = $"Всего оценок: {total}";
+            TotalWeightText = $"Учебная нагрузка: {totalWeight} весов";
 
             UpdateAttendanceStats(attendances);
             UpdateProgressBars();
