@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
+using GPACalculator.Models;
 using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
@@ -9,8 +12,7 @@ namespace GPACalculator.ViewModels
     {
         // Сервис для расчета GPA
         private readonly IGpaCalculator _gpaCalculator;
-        // Ссылка на главную ViewModel для доступа к предметам
-        private readonly MainViewModel _mainViewModel;
+        private readonly IStudentDataService _studentDataService;
 
         // Поля для хранения данных
         private string _targetGpa = "";
@@ -19,6 +21,7 @@ namespace GPACalculator.ViewModels
         private string _adviceText = "";
         private string _currentGpaText = "";
         private bool _hasResult;
+        private Student _selectedStudent;
 
         // Свойства для привязки к UI
         public string TargetGpa
@@ -99,14 +102,33 @@ namespace GPACalculator.ViewModels
             }
         }
 
+        // Список всех студентов — для Picker
+        public ObservableCollection<Student> Students => _studentDataService.Students;
+
+        // Выбранный студент
+        public Student SelectedStudent
+        {
+            get => _selectedStudent;
+            set
+            {
+                if (_selectedStudent != value)
+                {
+                    _selectedStudent = value;
+                    OnPropertyChanged();
+                    // Обновляем текущий GPA при смене студента
+                    UpdateCurrentGpa();
+                }
+            }
+        }
+
         // Команда для расчета
         public ICommand CalculateCommand { get; }
 
-        // Конструктор получает сервис и главную ViewModel
-        public TargetCalculatorViewModel(IGpaCalculator gpaCalculator, MainViewModel mainViewModel)
+        // Конструктор получает сервис и сервис студентов
+        public TargetCalculatorViewModel(IGpaCalculator gpaCalculator, IStudentDataService studentDataService)
         {
             _gpaCalculator = gpaCalculator;
-            _mainViewModel = mainViewModel;
+            _studentDataService = studentDataService;
 
             CalculateCommand = new Command(ExecuteCalculate);
 
@@ -117,12 +139,21 @@ namespace GPACalculator.ViewModels
         // Метод расчета необходимого среднего балла
         private void ExecuteCalculate()
         {
-            var subjects = _mainViewModel.Subjects;
+            // Проверяем, выбран ли студент
+            if (SelectedStudent == null)
+            {
+                ResultText = "Сначала выберите студента!";
+                AdviceText = "";
+                HasResult = true;
+                return;
+            }
+
+            var subjects = SelectedStudent.Subjects;
 
             if (subjects.Count == 0)
             {
-                ResultText = "Сначала добавьте предметы на главной странице!";
-                AdviceText = "";
+                ResultText = $"У студента '{SelectedStudent.Name}' нет предметов!";
+                AdviceText = "Добавьте предметы на главной странице.";
                 HasResult = true;
                 return;
             }
@@ -143,13 +174,13 @@ namespace GPACalculator.ViewModels
                 return;
             }
 
-            // Считаем текущий GPA
+            // Считаем текущий GPA выбранного студента
             double currentGpa = _gpaCalculator.CalculateGpa(subjects);
 
             // Если текущий GPA уже выше целевого
             if (currentGpa >= targetGpa)
             {
-                ResultText = $"Поздравляем! Ваш текущий GPA ({currentGpa:F2}) уже выше цели ({targetGpa}).";
+                ResultText = $"Поздравляем! Текущий GPA студента ({currentGpa:F2}) уже выше цели ({targetGpa}).";
                 AdviceText = "Вам не нужно получать дополнительные оценки. Продолжайте в том же духе!";
                 HasResult = true;
                 return;
@@ -206,7 +237,7 @@ namespace GPACalculator.ViewModels
             else if (neededAverageGrade <= currentGpa)
             {
                 ResultText = $"Нужен средний балл: {neededAverageGrade:F2}";
-                AdviceText = $"Ваш текущий GPA ({currentGpa:F2}) уже выше необходимого. Продолжайте в том же духе!";
+                AdviceText = $"Текущий GPA студента ({currentGpa:F2}) уже выше необходимого. Продолжайте в том же духе!";
             }
             else
             {
@@ -216,16 +247,16 @@ namespace GPACalculator.ViewModels
                 {
                     if (fivesCount == 1)
                     {
-                        AdviceText = $"Вам нужна 1 пятёрка (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
+                        AdviceText = $"Студенту '{SelectedStudent.Name}' нужна 1 пятёрка (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
                     }
                     else
                     {
-                        AdviceText = $"Вам нужно {fivesCount} пятёрок (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
+                        AdviceText = $"Студенту '{SelectedStudent.Name}' нужно {fivesCount} пятёрок (вес {averageRemainingWeight}) для достижения цели {targetGpa}. Текущий GPA: {currentGpa:F2}.";
                     }
                 }
                 else
                 {
-                    AdviceText = $"Вам нужно подтянуть успеваемость. Текущий GPA: {currentGpa:F2}. Сосредоточьтесь на предметах с большим весом!";
+                    AdviceText = $"Студенту нужно подтянуть успеваемость. Текущий GPA: {currentGpa:F2}. Сосредоточьтесь на предметах с большим весом!";
                 }
             }
 
@@ -235,16 +266,22 @@ namespace GPACalculator.ViewModels
         // Обновление текста текущего GPA
         private void UpdateCurrentGpa()
         {
-            var subjects = _mainViewModel.Subjects;
+            if (SelectedStudent == null)
+            {
+                CurrentGpaText = "Сначала выберите студента";
+                return;
+            }
+
+            var subjects = SelectedStudent.Subjects;
 
             if (subjects.Count == 0)
             {
-                CurrentGpaText = "Текущий GPA: нет предметов";
+                CurrentGpaText = $"Студент '{SelectedStudent.Name}': нет предметов";
             }
             else
             {
                 double currentGpa = _gpaCalculator.CalculateGpa(subjects);
-                CurrentGpaText = $"Текущий GPA: {currentGpa:F2}";
+                CurrentGpaText = $"Студент '{SelectedStudent.Name}': текущий GPA {currentGpa:F2}";
             }
         }
     }

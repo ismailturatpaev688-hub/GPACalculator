@@ -1,18 +1,22 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using GPACalculator.Models;
 using GPACalculator.Services;
 
 namespace GPACalculator.ViewModels
 {
     public class SingleSubjectCalculatorViewModel : BaseViewModel
     {
-        // Сервис
+        // Сервисы
         private readonly ISubjectDataService _dataService;
+        private readonly IStudentDataService _studentDataService;
+        private readonly MainViewModel _mainViewModel;
+
         // Приватные поля
         private string _subjectName = "";
         private string _newGrade = "";
-        private string _weight = ""; 
+        private string _weight = "";
         private string _resultText = "Добавьте оценки для расчета";
         private double _averageGrade;
 
@@ -44,15 +48,29 @@ namespace GPACalculator.ViewModels
             set { if (_averageGrade != value) { _averageGrade = value; OnPropertyChanged(); } }
         }
 
-        // Команды: Добавить, расчитать, сихронизация, очистить
+        // Список студентов для выбора
+        public ObservableCollection<Student> Students => _studentDataService.Students;
+
+        // Выбранный студент
+        private Student _selectedStudent;
+        public Student SelectedStudent
+        {
+            get => _selectedStudent;
+            set { if (_selectedStudent != value) { _selectedStudent = value; OnPropertyChanged(); } }
+        }
+
         public ICommand AddGradeCommand { get; }
         public ICommand CalculateCommand { get; }
         public ICommand SaveToMainCommand { get; }
         public ICommand ClearCommand { get; }
 
-        public SingleSubjectCalculatorViewModel(ISubjectDataService dataService)
+        public SingleSubjectCalculatorViewModel(ISubjectDataService dataService,
+                                                IStudentDataService studentDataService,
+                                                MainViewModel mainViewModel)
         {
             _dataService = dataService;
+            _studentDataService = studentDataService;
+            _mainViewModel = mainViewModel;
 
             AddGradeCommand = new Command(ExecuteAddGrade);
             CalculateCommand = new Command(ExecuteCalculate);
@@ -90,9 +108,14 @@ namespace GPACalculator.ViewModels
             ResultText = $"Средний балл по \"{SubjectName}\": {AverageGrade:F2}\n{gradeText}";
         }
 
-        // Отправляем все локальные оценки в общее хранилище
+        // Отправляем все локальные оценки выбранному студенту
         private void ExecuteSaveToMain()
         {
+            if (SelectedStudent == null)
+            {
+                ResultText = "Сначала выберите студента!";
+                return;
+            }
             if (Grades.Count == 0) { ResultText = "Нечего сохранять — добавьте оценки!"; return; }
             if (string.IsNullOrWhiteSpace(SubjectName)) { ResultText = "Введите название предмета!"; return; }
             if (!double.TryParse(Weight, out double w) || w < 1 || w > 5)
@@ -101,14 +124,31 @@ namespace GPACalculator.ViewModels
                 return;
             }
 
-            // Передаём все оценки в сервис. Он сам объединит с существующим предметом, если такой есть.
+            // Добавляем все оценки к предмету выбранного студента
             var grades = Grades.Select(g => g.Grade).ToList();
-            _dataService.AddOrUpdate(SubjectName, grades, w);
+            AddGradesToStudent(SelectedStudent, SubjectName, grades, w);
 
-            ResultText = $"Сохранено в общий список! Оценок передано: {grades.Count}";
-
-            // Очищаем локальный список, чтобы при повторном сохранении не задвоить
+            ResultText = $"Сохранено студенту '{SelectedStudent.Name}'! Оценок передано: {grades.Count}";
             Grades.Clear();
+        }
+
+        // Вспомогательный метод: добавляет несколько оценок к предмету студента
+        private void AddGradesToStudent(Student student, string name, System.Collections.Generic.IEnumerable<double> grades, double weight)
+        {
+            name = name.Trim();
+            var existing = student.Subjects.FirstOrDefault(s =>
+                s.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
+            {
+                foreach (var g in grades) existing.AddGrade(g);
+            }
+            else
+            {
+                var subject = new Subject(name, weight);
+                foreach (var g in grades) subject.AddGrade(g);
+                student.Subjects.Add(subject);
+            }
         }
 
         private void ExecuteClear()

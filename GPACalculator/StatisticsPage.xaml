@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             xmlns:models="clr-namespace:GPACalculator.Models"
              x:Class="GPACalculator.StatisticsPage"
              x:DataType="viewModels:StatisticsViewModel"
              BackgroundColor="#F5F5F5"
@@ -18,11 +19,107 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,10"/>
 
+            <!-- БЛОК ВЫБОРА СТУДЕНТА -->
+            <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#F4ECF7">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Выбор студента" 
+                           FontSize="16" FontAttributes="Bold" TextColor="#8E44AD"/>
+                    <Picker ItemsSource="{Binding Students}"
+                            ItemDisplayBinding="{Binding DisplayText}"
+                            SelectedItem="{Binding SelectedStudent, Mode=TwoWay}"
+                            Title="Все студенты (общая статистика)"
+                            BackgroundColor="White"
+                            TextColor="#2C3E50"/>
+                    <Label Text="Выберите конкретного студента или оставьте пустым для общей статистики."
+                           FontSize="12" TextColor="#7F8C8D"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Блок общего среднего балла и нагрузки -->
             <Border Stroke="#27AE60" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#EAFAF1">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="{Binding AverageGpaText}" FontSize="24" TextColor="#27AE60" FontAttributes="Bold" HorizontalOptions="Center"/>
                     <Label Text="{Binding TotalWeightText}" FontSize="14" TextColor="#27AE60" HorizontalOptions="Center" Opacity="0.8"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Общая информация о студентах и долгах -->
+            <Border Stroke="#3498DB" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#EBF5FB">
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                        <Label Text="{Binding StudentsCountText}" FontSize="16" FontAttributes="Bold" TextColor="#2980B9" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+                        <Label Text="{Binding TotalDebtsText}" FontSize="16" FontAttributes="Bold" TextColor="#E74C3C" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Блок посещаемости -->
+            <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#E8F8F5">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Посещаемость" FontSize="20" FontAttributes="Bold" TextColor="#16A085"/>
+                    <Label Text="{Binding AttendanceText}" FontSize="16" TextColor="#2C3E50" HorizontalOptions="Center"/>
+                    <ProgressBar Progress="{Binding AttendanceProgress}" ProgressColor="#16A085" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- БЛОК ДОЛГОВ ВЫБРАННОГО СТУДЕНТА (показывается только если студент выбран) -->
+            <Border Stroke="#E74C3C" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
+                    IsVisible="{Binding IsStudentSelected}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Долги студента" FontSize="20" FontAttributes="Bold" TextColor="#E74C3C"/>
+                    <CollectionView ItemsSource="{Binding SelectedStudent.Debts}" MinimumHeightRequest="50">
+                        <CollectionView.EmptyView>
+                            <Label Text="Долгов нет — молодец!" TextColor="#27AE60" FontSize="14" HorizontalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Debt">
+                                <Border Stroke="#FADBD8" StrokeShape="RoundRectangle 8" Padding="10" Margin="0,3" BackgroundColor="#FDF2F2">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding SubjectName}" FontAttributes="Bold" FontSize="15" TextColor="#2C3E50"/>
+                                            <Label Text="{Binding Description}" FontSize="13" TextColor="#7F8C8D"/>
+                                            <Label Text="{Binding DueDate, StringFormat='Сдать до: {0:dd.MM.yyyy}'}" 
+                                                   FontSize="12" TextColor="#E74C3C"/>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Text="✕" FontAttributes="Bold" TextColor="White"
+                                                BackgroundColor="#E74C3C" WidthRequest="35" HeightRequest="35"
+                                                CornerRadius="17" Padding="0" VerticalOptions="Center"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StatisticsViewModel}}, Path=RemoveDebtCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- БЛОК ПОСЕЩАЕМОСТИ ВЫБРАННОГО СТУДЕНТА (показывается только если студент выбран) -->
+            <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White"
+                    IsVisible="{Binding IsStudentSelected}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="История посещаемости студента" FontSize="20" FontAttributes="Bold" TextColor="#16A085"/>
+                    <CollectionView ItemsSource="{Binding SelectedStudent.Attendances}" MinimumHeightRequest="50">
+                        <CollectionView.EmptyView>
+                            <Label Text="История пуста" TextColor="#95A5A6" FontSize="14" HorizontalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Attendance">
+                                <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 8" Padding="10" Margin="0,3" BackgroundColor="#FAFAFA">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                        <Label Grid.Column="0" Text="{Binding DisplayText}" FontSize="14" TextColor="#2C3E50" VerticalOptions="Center"/>
+                                        <Button Grid.Column="1" Text="✕" FontAttributes="Bold" TextColor="White"
+                                                BackgroundColor="#E74C3C" WidthRequest="35" HeightRequest="35"
+                                                CornerRadius="17" Padding="0" VerticalOptions="Center"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StatisticsViewModel}}, Path=RemoveAttendanceCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
             </Border>
 
@@ -46,7 +143,6 @@
                 <VerticalStackLayout Spacing="15">
                     <Label Text="Структура оценок" FontSize="20" FontAttributes="Bold" TextColor="#3498DB"/>
 
-                    <!-- Пятерки -->
                     <VerticalStackLayout Spacing="5">
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Text="Отлично (5)" TextColor="#27AE60" FontAttributes="Bold"/>
@@ -55,7 +151,6 @@
                         <ProgressBar Progress="{Binding ProgressFives}" ProgressColor="#27AE60" />
                     </VerticalStackLayout>
 
-                    <!-- Четверки -->
                     <VerticalStackLayout Spacing="5">
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Text="Хорошо (4)" TextColor="#3498DB" FontAttributes="Bold"/>
@@ -64,7 +159,6 @@
                         <ProgressBar Progress="{Binding ProgressFours}" ProgressColor="#3498DB" />
                     </VerticalStackLayout>
 
-                    <!-- Тройки -->
                     <VerticalStackLayout Spacing="5">
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Text="Удовл. (3)" TextColor="#F39C12" FontAttributes="Bold"/>
@@ -73,7 +167,6 @@
                         <ProgressBar Progress="{Binding ProgressThrees}" ProgressColor="#F39C12" />
                     </VerticalStackLayout>
 
-                    <!-- Двойки -->
                     <VerticalStackLayout Spacing="5">
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Text="Неуд. (2)" TextColor="#E74C3C" FontAttributes="Bold"/>
@@ -97,17 +190,12 @@
                             <DataTemplate x:DataType="viewModels:SubjectStats">
                                 <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10"
                                         Padding="15" Margin="0,5" BackgroundColor="#FAFAFA">
-                                    <!-- Grid с двумя колонками: слева информация, справа кнопка удаления -->
                                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                                        <!-- Информация о предмете -->
                                         <VerticalStackLayout Grid.Column="0" Spacing="5">
-                                            <!-- Название предмета -->
                                             <Label Text="{Binding Name}" FontAttributes="Bold" 
                                                    FontSize="17" TextColor="#2C3E50"/>
-                                            <!-- Все оценки по порядку -->
                                             <Label Text="{Binding GradesText, StringFormat='Оценки: {0}'}" 
                                                    FontSize="14" TextColor="#7F8C8D"/>
-                                            <!-- Средний балл и вес -->
                                             <HorizontalStackLayout Spacing="20">
                                                 <Label Text="{Binding AverageGrade, StringFormat='Средний: {0:F2}'}" 
                                                        FontSize="15" FontAttributes="Bold" TextColor="#27AE60"/>
@@ -116,9 +204,6 @@
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
 
-                                        <!-- Кнопка удаления предмета -->
-                                        <!-- Source={RelativeSource AncestorType=...} нужна, чтобы найти команду в ViewModel,
-                                             а не в текущем SubjectStats -->
                                         <Button Grid.Column="1"
                                                 Text="✕"
                                                 FontSize="16"

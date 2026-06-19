@@ -12,6 +12,7 @@ namespace GPACalculator.ViewModels
         // Сервисы
         private readonly IGpaCalculator _gpaCalculator;
         private readonly ISubjectDataService _dataService;
+        private readonly IStudentDataService _studentDataService;
 
         // Приватные поля
         private int _countFives, _countFours, _countThrees, _countTwos;
@@ -20,8 +21,16 @@ namespace GPACalculator.ViewModels
         private double _progressFives, _progressFours, _progressThrees, _progressTwos;
         private string _textFives, _textFours, _textThrees, _textTwos;
 
+        // Поля для посещаемости и студентов
+        private string _attendanceText;
+        private double _attendanceProgress;
+        private string _studentsCountText;
+        private string _totalDebtsText;
+
+        // Выбранный студент (null = смотреть всех)
+        private Student _selectedStudent;
+
         // Публичные свойства
-        // Уведомляет об изменение элементов
         public ObservableCollection<SubjectStats> SubjectStatsList { get; } = new();
 
         public int CountFives { get => _countFives; set { _countFives = value; OnPropertyChanged(); } }
@@ -46,54 +55,97 @@ namespace GPACalculator.ViewModels
         public string TextThrees { get => _textThrees; set { _textThrees = value; OnPropertyChanged(); } }
         public string TextTwos { get => _textTwos; set { _textTwos = value; OnPropertyChanged(); } }
 
+        public string AttendanceText { get => _attendanceText; set { _attendanceText = value; OnPropertyChanged(); } }
+        public double AttendanceProgress { get => _attendanceProgress; set { _attendanceProgress = value; OnPropertyChanged(); } }
+        public string StudentsCountText { get => _studentsCountText; set { _studentsCountText = value; OnPropertyChanged(); } }
+        public string TotalDebtsText { get => _totalDebtsText; set { _totalDebtsText = value; OnPropertyChanged(); } }
+
+        // Список всех студентов — для Picker
+        public ObservableCollection<Student> Students => _studentDataService.Students;
+
+        // Выбранный студент
+        public Student SelectedStudent
+        {
+            get => _selectedStudent;
+            set
+            {
+                if (_selectedStudent != value)
+                {
+                    _selectedStudent = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsStudentSelected));
+                    // Пересчитываем статистику при смене студента
+                    ExecuteLoadStatistics();
+                }
+            }
+        }
+
+        // Удобное свойство для UI: выбран ли конкретный студент
+        public bool IsStudentSelected => SelectedStudent != null;
+
         // Команды
         public ICommand LoadStatisticsCommand { get; }
-        // Новая команда для удаления предмета
         public ICommand DeleteSubjectCommand { get; }
+        public ICommand RemoveDebtCommand { get; }
+        public ICommand RemoveAttendanceCommand { get; }
 
-
-        // Сохраняет данные и использует команду ExecuteLoadStatistics
-        public StatisticsViewModel(IGpaCalculator gpaCalculator, ISubjectDataService dataService)
+        public StatisticsViewModel(IGpaCalculator gpaCalculator,
+                                   ISubjectDataService dataService,
+                                   IStudentDataService studentDataService)
         {
             _gpaCalculator = gpaCalculator;
             _dataService = dataService;
+            _studentDataService = studentDataService;
             LoadStatisticsCommand = new Command(ExecuteLoadStatistics);
-            // Инициализируем команду удаления
             DeleteSubjectCommand = new Command<SubjectStats>(ExecuteDeleteSubject);
+            RemoveDebtCommand = new Command<Debt>(ExecuteRemoveDebt);
+            RemoveAttendanceCommand = new Command<Attendance>(ExecuteRemoveAttendance);
         }
 
         private void ExecuteLoadStatistics()
         {
-            // Если равен нулю то выводит сообщение: Нет данных и т.д
             SubjectStatsList.Clear();
             CountFives = CountFours = CountThrees = CountTwos = 0;
 
-            if (_dataService.Subjects.Count == 0)
+            // Если выбран конкретный студент — работаем только с ним
+            if (SelectedStudent != null)
             {
-                AverageGpaText = "Нет данных";
-                TotalGradesText = "Всего оценок: 0";
-                RecommendedGradeText = "Добавьте предметы на главной странице";
-                BestSubjectText = WorstSubjectText = "—";
-                TotalWeightText = "Общий вес: 0";
+                LoadStudentStatistics(SelectedStudent);
                 return;
             }
 
-            double totalGpa = _gpaCalculator.CalculateGpa(_dataService.Subjects);
+            // Иначе — общая статистика по всем студентам
+            var allSubjects = _studentDataService.Students.SelectMany(s => s.Subjects).ToList();
+            var allAttendances = _studentDataService.Students.SelectMany(s => s.Attendances).ToList();
+            int totalDebts = _studentDataService.Students.Sum(s => s.Debts.Count);
+
+            StudentsCountText = $"Всего студентов: {_studentDataService.Students.Count}";
+            TotalDebtsText = $"Всего должностей: {totalDebts}";
+
+            if (allSubjects.Count == 0)
+            {
+                AverageGpaText = "Нет данных";
+                TotalGradesText = "Всего оценок: 0";
+                RecommendedGradeText = "Добавьте студентов и предметы";
+                BestSubjectText = WorstSubjectText = "—";
+                TotalWeightText = "Общий вес: 0";
+                AttendanceText = "Посещаемость: нет данных";
+                AttendanceProgress = 0;
+                return;
+            }
+
+            double totalGpa = _gpaCalculator.CalculateGpa(allSubjects);
             AverageGpaText = $"Средний балл: {totalGpa:F2}";
 
             double totalWeight = 0;
             Subject best = null, worst = null;
 
-            foreach (var subject in _dataService.Subjects)
+            foreach (var subject in allSubjects)
             {
-                // Накапливает общий вес
                 totalWeight += subject.Weight;
-                // Ищет максимальную оценку
                 if (best == null || subject.Grade > best.Grade) best = subject;
-                // Ищет минимальную оценку
                 if (worst == null || subject.Grade < worst.Grade) worst = subject;
 
-                // Считаем оценку в распределении
                 foreach (var g in subject.Grades)
                 {
                     int rounded = (int)Math.Round(g, MidpointRounding.AwayFromZero);
@@ -106,15 +158,13 @@ namespace GPACalculator.ViewModels
                     }
                 }
 
-                // Формат данных: имя, все оценки, средний балл
-                // Передаём ссылку на оригинальный Subject, чтобы команда удаления могла его найти
                 SubjectStatsList.Add(new SubjectStats
                 {
                     Name = subject.Name,
                     GradesText = subject.GradesText,
                     AverageGrade = subject.Grade,
                     Weight = subject.Weight,
-                    Subject = subject // Сохраняем ссылку на оригинал
+                    Subject = subject
                 });
             }
 
@@ -122,39 +172,158 @@ namespace GPACalculator.ViewModels
             TotalGradesText = $"Всего оценок: {total}";
             TotalWeightText = $"Общая учебная нагрузка: {totalWeight} весов";
 
-            // Почет прогресса по разным оценкам
+            UpdateAttendanceStats(allAttendances);
+            UpdateProgressBars();
+
+            BestSubjectText = best != null ? $"{best.Name} ({best.Grade:F2})" : "—";
+            WorstSubjectText = worst != null ? $"{worst.Name} ({worst.Grade:F2})" : "—";
+
+            GenerateSmartRecommendation(totalGpa, worst);
+        }
+
+        // Загрузка статистики по конкретному студенту
+        private void LoadStudentStatistics(Student student)
+        {
+            StudentsCountText = $"Студент: {student.Name}";
+            TotalDebtsText = $"Долгов: {student.Debts.Count}";
+
+            var subjects = student.Subjects.ToList();
+            var attendances = student.Attendances.ToList();
+
+            if (subjects.Count == 0)
+            {
+                AverageGpaText = "Нет предметов";
+                TotalGradesText = "Всего оценок: 0";
+                RecommendedGradeText = "Добавьте предметы этому студенту";
+                BestSubjectText = WorstSubjectText = "—";
+                TotalWeightText = "Общий вес: 0";
+                AttendanceText = "Посещаемость: нет данных";
+                AttendanceProgress = 0;
+                return;
+            }
+
+            double gpa = _gpaCalculator.CalculateGpa(subjects);
+            AverageGpaText = $"Средний балл: {gpa:F2}";
+
+            double totalWeight = 0;
+            Subject best = null, worst = null;
+
+            foreach (var subject in subjects)
+            {
+                totalWeight += subject.Weight;
+                if (best == null || subject.Grade > best.Grade) best = subject;
+                if (worst == null || subject.Grade < worst.Grade) worst = subject;
+
+                foreach (var g in subject.Grades)
+                {
+                    int rounded = (int)Math.Round(g, MidpointRounding.AwayFromZero);
+                    switch (rounded)
+                    {
+                        case 5: CountFives++; break;
+                        case 4: CountFours++; break;
+                        case 3: CountThrees++; break;
+                        case 2: CountTwos++; break;
+                    }
+                }
+
+                SubjectStatsList.Add(new SubjectStats
+                {
+                    Name = subject.Name,
+                    GradesText = subject.GradesText,
+                    AverageGrade = subject.Grade,
+                    Weight = subject.Weight,
+                    Subject = subject
+                });
+            }
+
+            int total = CountFives + CountFours + CountThrees + CountTwos;
+            TotalGradesText = $"Всего оценок: {total}";
+            TotalWeightText = $"Учебная нагрузка: {totalWeight} весов";
+
+            UpdateAttendanceStats(attendances);
+            UpdateProgressBars();
+
+            BestSubjectText = best != null ? $"{best.Name} ({best.Grade:F2})" : "—";
+            WorstSubjectText = worst != null ? $"{worst.Name} ({worst.Grade:F2})" : "—";
+
+            GenerateSmartRecommendation(gpa, worst);
+        }
+
+        // Обновление статистики посещаемости
+        private void UpdateAttendanceStats(System.Collections.Generic.List<Attendance> attendances)
+        {
+            int presentCount = attendances.Count(a => a.IsPresent);
+            int totalCount = attendances.Count;
+            if (totalCount > 0)
+            {
+                double percent = (double)presentCount * 100.0 / totalCount;
+                AttendanceProgress = percent / 100.0;
+                AttendanceText = $"Посещаемость: {presentCount} из {totalCount} ({percent:F1}%)";
+            }
+            else
+            {
+                AttendanceProgress = 0;
+                AttendanceText = "Посещаемость: нет данных";
+            }
+        }
+
+        // Обновление прогресс-баров
+        private void UpdateProgressBars()
+        {
+            int total = CountFives + CountFours + CountThrees + CountTwos;
             CalculateProgress(CountFives, total, ref _progressFives, ref _textFives);
             CalculateProgress(CountFours, total, ref _progressFours, ref _textFours);
             CalculateProgress(CountThrees, total, ref _progressThrees, ref _textThrees);
             CalculateProgress(CountTwos, total, ref _progressTwos, ref _textTwos);
 
-            // Если модель данных изменилось, то уведомляет об этом
             OnPropertyChanged(nameof(ProgressFives)); OnPropertyChanged(nameof(TextFives));
             OnPropertyChanged(nameof(ProgressFours)); OnPropertyChanged(nameof(TextFours));
             OnPropertyChanged(nameof(ProgressThrees)); OnPropertyChanged(nameof(TextThrees));
             OnPropertyChanged(nameof(ProgressTwos)); OnPropertyChanged(nameof(TextTwos));
-
-            BestSubjectText = $"{best.Name} ({best.Grade:F2})";
-            WorstSubjectText = $"{worst.Name} ({worst.Grade:F2})";
-
-            GenerateSmartRecommendation(totalGpa, worst);
         }
 
-        // Обработчик команды удаления предмета
-        private void ExecuteDeleteSubject(SubjectStats stats)
+        // Удаление долга выбранного студента
+        private void ExecuteRemoveDebt(Debt debt)
         {
-            // Проверяем, что передан валидный объект и есть ссылка на оригинальный Subject
-            if (stats?.Subject == null) return;
-
-            // Удаляем предмет из общего хранилища
-            // Поскольку Subjects — это ObservableCollection, UI на других страницах тоже обновится
-            _dataService.Subjects.Remove(stats.Subject);
-
-            // Пересчитываем всю статистику заново, чтобы отразить изменения
+            if (SelectedStudent == null || debt == null) return;
+            _studentDataService.RemoveDebt(SelectedStudent, debt);
+            // Пересчитываем, чтобы обновить TotalDebtsText
             ExecuteLoadStatistics();
         }
 
-        // Калькулятор прогресса
+        // Удаление записи посещаемости выбранного студента
+        private void ExecuteRemoveAttendance(Attendance attendance)
+        {
+            if (SelectedStudent == null || attendance == null) return;
+            _studentDataService.RemoveAttendance(SelectedStudent, attendance);
+            ExecuteLoadStatistics();
+        }
+
+        private void ExecuteDeleteSubject(SubjectStats stats)
+        {
+            if (stats?.Subject == null) return;
+
+            if (SelectedStudent != null)
+            {
+                // Удаляем у выбранного студента
+                SelectedStudent.Subjects.Remove(stats.Subject);
+            }
+            else
+            {
+                // Ищем студента, у которого есть этот предмет
+                foreach (var student in _studentDataService.Students)
+                {
+                    if (student.Subjects.Contains(stats.Subject))
+                    {
+                        student.Subjects.Remove(stats.Subject);
+                        break;
+                    }
+                }
+            }
+
+            ExecuteLoadStatistics();
+        }
+
         private void CalculateProgress(int count, int total, ref double progress, ref string text)
         {
             if (total > 0)
@@ -169,9 +338,14 @@ namespace GPACalculator.ViewModels
             }
         }
 
-        // Оценка среднего балла от 2 до 4,75
         private void GenerateSmartRecommendation(double gpa, Subject worst)
         {
+            if (worst == null)
+            {
+                RecommendedGradeText = "Добавьте предметы для получения рекомендаций.";
+                return;
+            }
+
             if (gpa >= 4.75)
                 RecommendedGradeText = "Вы — отличник! Так держать, вы на пути к красному диплому.";
             else if (gpa >= 4.0)
@@ -183,7 +357,7 @@ namespace GPACalculator.ViewModels
         }
     }
 
-    // Модель для статистики по предмету: Наименование, оценка, средний бал, вес и удаления 
+    // Модель для статистики по предмету
     public class SubjectStats
     {
         public string Name { get; set; }

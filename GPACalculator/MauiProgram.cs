@@ -17,32 +17,40 @@ namespace GPACalculator
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Сервесы (синглтоны — общие для всего приложения)
+            // Сервисы (синглтоны — общие для всего приложения)
             builder.Services.AddSingleton<IGpaCalculator, GpaCalculatorService>();
             builder.Services.AddSingleton<ISubjectDataService, SubjectDataService>();
+            builder.Services.AddSingleton<IStudentDataService, StudentDataService>();
 
-            // Главная Страница
+            // Главная страница
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainPage>();
 
-            // Страница Статистики
+            // Страница статистики
             builder.Services.AddSingleton<StatisticsViewModel>();
             builder.Services.AddSingleton<StatisticsPage>();
 
-            // Страница о программе
+            // Страница "О программе"
             builder.Services.AddSingleton<AboutViewModel>();
             builder.Services.AddSingleton<AboutPage>();
 
-            // Страница цель GPA
+            // Страница цели GPA (теперь с DI)
+            builder.Services.AddSingleton<TargetCalculatorViewModel>();
             builder.Services.AddSingleton<TargetCalculatorPage>();
 
-            // Страница Помощь
+            // Страница помощи
             builder.Services.AddSingleton<HelpViewModel>();
             builder.Services.AddSingleton<HelpPage>();
 
-            // Страница расчета по одному предмету
+            // Страница расчёта по одному предмету
             builder.Services.AddSingleton<SingleSubjectCalculatorViewModel>();
             builder.Services.AddSingleton<SingleSubjectCalculatorPage>();
+
+            // Страница студентов и профиль студента
+            builder.Services.AddSingleton<StudentsViewModel>();
+            builder.Services.AddSingleton<StudentsPage>();
+            builder.Services.AddTransient<StudentProfileViewModel>();
+            builder.Services.AddTransient<StudentProfilePage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

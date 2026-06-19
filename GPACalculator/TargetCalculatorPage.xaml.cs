@@ -5,13 +5,10 @@ namespace GPACalculator;
 
 public partial class TargetCalculatorPage : ContentPage
 {
-    // Конструктор создает ViewModel вручную с нужными зависимостями
-    public TargetCalculatorPage(MainViewModel mainViewModel, IGpaCalculator gpaCalculator)
+    // Конструктор получает ViewModel через DI
+    public TargetCalculatorPage(TargetCalculatorViewModel viewModel)
     {
         InitializeComponent();
-
-        // Создаем ViewModel вручную, передавая нужные зависимости
-        var viewModel = new TargetCalculatorViewModel(gpaCalculator, mainViewModel);
         BindingContext = viewModel; // Привязываем ViewModel к странице
     }
 }

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             xmlns:models="clr-namespace:GPACalculator.Models"
+             x:Class="GPACalculator.StudentProfilePage"
+             x:DataType="viewModels:StudentProfileViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="Профиль студента">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="20">
+
+            <!-- Заголовок с именем студента -->
+            <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="#F4ECF7">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="{Binding StudentName}" 
+                           FontSize="28" FontAttributes="Bold" TextColor="#8E44AD" HorizontalOptions="Center"/>
+                    <Label Text="{Binding AverageGradeText}" 
+                           FontSize="16" TextColor="#8E44AD" HorizontalOptions="Center"/>
+                    <Label Text="{Binding AttendancePercentText}" 
+                           FontSize="14" TextColor="#8E44AD" HorizontalOptions="Center" Opacity="0.8"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Блок добавления долга -->
+            <Border Stroke="#E74C3C" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Добавить долг" FontSize="18" FontAttributes="Bold" TextColor="#E74C3C"/>
+                    <Entry Placeholder="Предмет" Text="{Binding DebtSubject, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
+                    <Entry Placeholder="Описание (что нужно сдать)" Text="{Binding DebtDescription, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Крайний срок" FontSize="14" TextColor="#7F8C8D"/>
+                        <DatePicker Date="{Binding DebtDueDate, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
+                    </VerticalStackLayout>
+                    <Button Text="Добавить долг" Command="{Binding AddDebtCommand}"
+                            BackgroundColor="#E74C3C" TextColor="White" FontAttributes="Bold"
+                            FontSize="15" HeightRequest="50" CornerRadius="10"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Список долгов -->
+            <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Долги студента" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50"/>
+                    <CollectionView ItemsSource="{Binding Student.Debts}" MinimumHeightRequest="50">
+                        <CollectionView.EmptyView>
+                            <Label Text="Долгов нет — молодец!" TextColor="#27AE60" FontSize="14" HorizontalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Debt">
+                                <Border Stroke="#FADBD8" StrokeShape="RoundRectangle 8" Padding="10" Margin="0,3" BackgroundColor="#FDF2F2">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding SubjectName}" FontAttributes="Bold" FontSize="15" TextColor="#2C3E50"/>
+                                            <Label Text="{Binding Description}" FontSize="13" TextColor="#7F8C8D"/>
+                                            <Label Text="{Binding DueDate, StringFormat='Сдать до: {0:dd.MM.yyyy}'}" 
+                                                   FontSize="12" 
+                                                   TextColor="{Binding IsOverdue, Converter={StaticResource BoolToColorConverter}, ConverterParameter=overdue}" />
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Text="✕" FontAttributes="Bold" TextColor="White"
+                                                BackgroundColor="#E74C3C" WidthRequest="35" HeightRequest="35"
+                                                CornerRadius="17" Padding="0" VerticalOptions="Center"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StudentProfileViewModel}}, Path=RemoveDebtCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Блок добавления посещаемости -->
+            <Border Stroke="#16A085" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Добавить посещаемость" FontSize="18" FontAttributes="Bold" TextColor="#16A085"/>
+                    <Entry Placeholder="Предмет" Text="{Binding AttendanceSubject, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Дата занятия" FontSize="14" TextColor="#7F8C8D"/>
+                        <DatePicker Date="{Binding AttendanceDate, Mode=TwoWay}" BackgroundColor="#FAFAFA"/>
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Spacing="15">
+                        <Button Text="✓ Был" Command="{Binding AddAttendanceCommand}"
+                                BackgroundColor="#27AE60" TextColor="White" FontAttributes="Bold"
+                                FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"
+                                Clicked="OnMarkPresent"/>
+                        <Button Text="✗ Не был" Command="{Binding AddAttendanceCommand}"
+                                BackgroundColor="#E74C3C" TextColor="White" FontAttributes="Bold"
+                                FontSize="15" HeightRequest="50" CornerRadius="10" WidthRequest="150"
+                                Clicked="OnMarkAbsent"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Список посещаемости -->
+            <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="История посещаемости" FontSize="18" FontAttributes="Bold" TextColor="#2C3E50"/>
+                    <CollectionView ItemsSource="{Binding Student.Attendances}" MinimumHeightRequest="50">
+                        <CollectionView.EmptyView>
+                            <Label Text="История пуста" TextColor="#95A5A6" FontSize="14" HorizontalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Attendance">
+                                <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 8" Padding="10" Margin="0,3" BackgroundColor="#FAFAFA">
+                                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                        <Label Grid.Column="0" Text="{Binding DisplayText}" FontSize="14" TextColor="#2C3E50" VerticalOptions="Center"/>
+                                        <Button Grid.Column="1" Text="✕" FontAttributes="Bold" TextColor="White"
+                                                BackgroundColor="#E74C3C" WidthRequest="35" HeightRequest="35"
+                                                CornerRadius="17" Padding="0" VerticalOptions="Center"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StudentProfileViewModel}}, Path=RemoveAttendanceCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{Binding StatusText}" FontSize="14" TextColor="#7F8C8D" HorizontalOptions="Center"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

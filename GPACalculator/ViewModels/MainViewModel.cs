@@ -1,6 +1,7 @@
 ﻿using GPACalculator.Models;
 using GPACalculator.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace GPACalculator.ViewModels
@@ -10,6 +11,7 @@ namespace GPACalculator.ViewModels
         // Сервисы
         private readonly IGpaCalculator _gpaCalculator;
         private readonly ISubjectDataService _dataService;
+        private readonly IStudentDataService _studentDataService;
 
         // Приватные поля
         private string _newSubjectName = "";
@@ -17,6 +19,7 @@ namespace GPACalculator.ViewModels
         private string _newSubjectWeight = "";
         private string _gpaResultText = "Введите предметы и нажмите Рассчитать";
         private string _predictionText = "";
+        private Student _selectedStudent;
 
         public string NewSubjectName
         {
@@ -44,17 +47,43 @@ namespace GPACalculator.ViewModels
             set { if (_predictionText != value) { _predictionText = value; OnPropertyChanged(); } }
         }
 
-        // Берём коллекцию напрямую из сервиса — она общая для всех страниц
-        public ObservableCollection<Subject> Subjects => _dataService.Subjects;
+        // Выбранный студент — к нему добавляются предметы
+        public Student SelectedStudent
+        {
+            get => _selectedStudent;
+            set
+            {
+                if (_selectedStudent != value)
+                {
+                    _selectedStudent = value;
+                    OnPropertyChanged();
+                    // Уведомляем UI, что Subjects изменились (они теперь от другого студента)
+                    OnPropertyChanged(nameof(Subjects));
+                    // Пересчитываем результат, если он был
+                    if (Subjects.Count > 0) ExecuteCalculateGpa();
+                    else GpaResultText = "Введите предметы и нажмите Рассчитать";
+                }
+            }
+        }
+
+        // Список всех студентов — для Picker
+        public ObservableCollection<Student> Students => _studentDataService.Students;
+
+        // Предметы выбранного студента (если студент не выбран — пустой список)
+        public ObservableCollection<Subject> Subjects =>
+            SelectedStudent?.Subjects ?? new ObservableCollection<Subject>();
 
         public ICommand AddSubjectCommand { get; }
         public ICommand CalculateGpaCommand { get; }
         public ICommand PredictGradeCommand { get; }
 
-        public MainViewModel(IGpaCalculator gpaCalculator, ISubjectDataService dataService)
+        public MainViewModel(IGpaCalculator gpaCalculator,
+                             ISubjectDataService dataService,
+                             IStudentDataService studentDataService)
         {
             _gpaCalculator = gpaCalculator;
             _dataService = dataService;
+            _studentDataService = studentDataService;
 
             AddSubjectCommand = new Command(ExecuteAddSubject);
             CalculateGpaCommand = new Command(ExecuteCalculateGpa);
@@ -63,6 +92,13 @@ namespace GPACalculator.ViewModels
 
         private void ExecuteAddSubject()
         {
+            // Проверяем, выбран ли студент
+            if (SelectedStudent == null)
+            {
+                GpaResultText = "Ошибка: Сначала выберите студента!";
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(NewSubjectName))
             {
                 GpaResultText = "Ошибка: Введите название предмета!";
@@ -83,14 +119,15 @@ namespace GPACalculator.ViewModels
                     return;
                 }
 
-                // Сервис сам проверит: есть ли такой предмет. Если есть — допишет оценку.
-                _dataService.AddOrUpdate(NewSubjectName, grade, weight);
+                // Добавляем предмет к ВЫБРАННОМУ студенту
+                // Используем вспомогательный метод, который ищет предмет в Subjects студента
+                AddSubjectToStudent(SelectedStudent, NewSubjectName, grade, weight);
 
                 NewSubjectName = "";
                 NewSubjectGrade = "";
                 NewSubjectWeight = "";
 
-                GpaResultText = "Предмет добавлен!";
+                GpaResultText = $"Предмет добавлен студенту '{SelectedStudent.Name}'!";
             }
             else
             {
@@ -98,69 +135,92 @@ namespace GPACalculator.ViewModels
             }
         }
 
+        // Вспомогательный метод: добавляет предмет к студенту (или дописывает оценку, если предмет уже есть)
+        private void AddSubjectToStudent(Student student, string name, double grade, double weight)
+        {
+            name = name.Trim();
+            // Ищем предмет у этого студента
+            var existing = student.Subjects.FirstOrDefault(s =>
+                s.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase));
+
+            if (existing != null)
+            {
+                // Предмет уже есть — дописываем оценку
+                existing.AddGrade(grade);
+            }
+            else
+            {
+                // Создаём новый предмет
+                var subject = new Subject(name, weight);
+                subject.AddGrade(grade);
+                student.Subjects.Add(subject);
+            }
+        }
+
         private void ExecuteCalculateGpa()
         {
+            if (SelectedStudent == null)
+            {
+                GpaResultText = "Сначала выберите студента!";
+                return;
+            }
             if (Subjects.Count == 0)
             {
-                GpaResultText = "Список пуст! Добавьте предметы.";
+                GpaResultText = $"У студента '{SelectedStudent.Name}' нет предметов.";
                 return;
             }
             double gpa = _gpaCalculator.CalculateGpa(Subjects);
-            GpaResultText = $"Ваш текущий GPA: {gpa:F2}";
+            GpaResultText = $"GPA студента '{SelectedStudent.Name}': {gpa:F2}";
         }
 
         private void ExecutePredictGrade()
         {
-            if (Subjects.Count == 0)
+            if (SelectedStudent == null)
             {
-                PredictionText = "Сначала добавьте хотя бы один предмет.";
+                PredictionText = "Сначала выберите студента!";
                 return;
             }
+            if (Subjects.Count == 0)
+            {
+                PredictionText = $"Сначала добавьте предметы студенту '{SelectedStudent.Name}'.";
+                return;
+            }
+
             double targetGpa = 4.5;
             const double subjectWeight = 3.0;
             double currentGpa = _gpaCalculator.CalculateGpa(Subjects);
 
             if (currentGpa >= targetGpa)
             {
-                PredictionText = $"Поздравляем! Ваш текущий GPA ({currentGpa:F2}) уже выше цели ({targetGpa}). Пятёрки не нужны!";
+                PredictionText = $"Поздравляем! Текущий GPA студента ({currentGpa:F2}) уже выше цели ({targetGpa}). Пятёрки не нужны!";
                 return;
             }
 
-            // Считаем текущую взвешенную сумму и сумму весов
             double currentWeightedSum = Subjects.Sum(s => s.Grade * s.Weight);
             double currentWeightSum = Subjects.Sum(s => s.Weight);
 
-            // Расчёта количества пятёрок
             double numerator = targetGpa * currentWeightSum - currentWeightedSum;
             double denominator = (5.0 * subjectWeight) - (targetGpa * subjectWeight);
 
-            // Проверяем, можно ли вообще достичь цели (знаменатель должен быть положительным)
             if (denominator <= 0)
             {
                 PredictionText = $"Невозможно достичь GPA {targetGpa} даже с бесконечным количеством пятёрок.";
                 return;
             }
 
-            // Считаем количество пятёрок и округляем вверх до целого
             double neededFives = numerator / denominator;
-            int fivesCount = (int)Math.Ceiling(neededFives);
+            int fivesCount = (int)System.Math.Ceiling(neededFives);
 
-            // Проверяем, не слишком ли много пятёрок нужно (больше 20 — нереалистично)
             if (fivesCount > 20)
             {
                 PredictionText = $"Для GPA {targetGpa} нужно слишком много пятёрок ({fivesCount}). Попробуйте снизить цель.";
                 return;
             }
 
-            // Формируем итоговое сообщение
             if (fivesCount == 1)
-            {
-                PredictionText = $"Вам нужна 1 пятёрка для достижения GPA {targetGpa}.";
-            }
+                PredictionText = $"Студенту '{SelectedStudent.Name}' нужна 1 пятёрка для достижения GPA {targetGpa}.";
             else
-            {
-                PredictionText = $"Вам нужно {fivesCount} пятёрок для достижения GPA {targetGpa}.";
-            }
+                PredictionText = $"Студенту '{SelectedStudent.Name}' нужно {fivesCount} пятёрок для достижения GPA {targetGpa}.";
         }
     }
 }

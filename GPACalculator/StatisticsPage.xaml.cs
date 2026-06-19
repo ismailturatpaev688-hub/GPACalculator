@@ -18,7 +18,7 @@ public partial class StatisticsPage : ContentPage
         // ѕроверка типа
         if (BindingContext is StatisticsViewModel vm)
         {
-            // ≈сли тип совпадает, то загружаютс€ данные и если нет данных, то передаем null
+            // ≈сли тип совпадает, то загружаютс€ данные
             vm.LoadStatisticsCommand.Execute(null);
         }
     }

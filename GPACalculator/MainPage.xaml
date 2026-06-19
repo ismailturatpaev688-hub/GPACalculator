@@ -18,6 +18,28 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,20"/>
 
+            <!-- НОВЫЙ БЛОК: Выбор студента -->
+            <Border Stroke="#9B59B6" 
+                    StrokeShape="RoundRectangle 15" 
+                    Padding="20"
+                    BackgroundColor="#F4ECF7">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Текущий студент" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#8E44AD"/>
+                    <Picker ItemsSource="{Binding Students}"
+                            ItemDisplayBinding="{Binding DisplayText}"
+                            SelectedItem="{Binding SelectedStudent, Mode=TwoWay}"
+                            Title="Выберите студента..."
+                            BackgroundColor="White"
+                            TextColor="#2C3E50"/>
+                    <Label Text="Предметы и оценки будут добавлены выбранному студенту."
+                           FontSize="12"
+                           TextColor="#7F8C8D"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Блок ввода данных -->
             <Border Stroke="#E0E0E0" 
                     StrokeShape="RoundRectangle 15" 
@@ -60,7 +82,7 @@
             </Border>
 
             <!-- Блок списка предметов -->
-            <Label Text="Ваши предметы" 
+            <Label Text="Предметы студента" 
                    FontSize="20" 
                    FontAttributes="Bold" 
                    TextColor="#2C3E50"
@@ -90,13 +112,12 @@
                             Padding="30"
                             BackgroundColor="White">
                         <VerticalStackLayout HorizontalOptions="Center">
-
                             <Label Text="Список пуст" 
                                    TextColor="#7F8C8D" 
                                    FontSize="30"
                                    HorizontalOptions="Center"
                                    Margin="0,10,0,0"/>
-                            <Label Text="Добавьте первый предмет!" 
+                            <Label Text="Выберите студента и добавьте предмет!" 
                                    TextColor="#95A5A6" 
                                    FontSize="14"
                                    HorizontalOptions="Center"/>
@@ -107,20 +128,16 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Subject">
                         <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10"
-                Padding="15" Margin="0,5" BackgroundColor="White">
+                                Padding="15" Margin="0,5" BackgroundColor="White">
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="4">
-                                <!-- Название предмета -->
                                 <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" 
-                       FontAttributes="Bold" FontSize="16" TextColor="#2C3E50"/>
-                                <!-- Средний балл -->
+                                       FontAttributes="Bold" FontSize="16" TextColor="#2C3E50"/>
                                 <Label Grid.Row="0" Grid.Column="1" Text="{Binding Grade, StringFormat='Ср: {0:F2}'}" 
-                       FontSize="16" FontAttributes="Bold" TextColor="#27AE60" VerticalOptions="Center"/>
-                                <!-- Все оценки -->
+                                       FontSize="16" FontAttributes="Bold" TextColor="#27AE60" VerticalOptions="Center"/>
                                 <Label Grid.Row="1" Grid.Column="0" Text="{Binding GradesText}" 
-                       FontSize="13" TextColor="#7F8C8D"/>
-                                <!-- Вес -->
+                                       FontSize="13" TextColor="#7F8C8D"/>
                                 <Label Grid.Row="1" Grid.Column="1" Text="{Binding Weight, StringFormat='Вес: {0}'}" 
-                       FontSize="13" TextColor="#3498DB"/>
+                                       FontSize="13" TextColor="#3498DB"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

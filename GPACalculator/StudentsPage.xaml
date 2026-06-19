@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:GPACalculator.ViewModels"
+             xmlns:models="clr-namespace:GPACalculator.Models"
+             x:Class="GPACalculator.StudentsPage"
+             x:DataType="viewModels:StudentsViewModel"
+             BackgroundColor="#F5F5F5"
+             Title="Студенты">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="25" Spacing="20">
+
+            <!-- Заголовок -->
+            <Label Text="Управление студентами" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   TextColor="#2C3E50"
+                   Margin="0,10,0,20"/>
+
+            <!-- Блок добавления студента -->
+            <Border Stroke="#9B59B6" StrokeShape="RoundRectangle 15" Padding="20" BackgroundColor="White">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Добавить нового студента" 
+                           FontSize="18" FontAttributes="Bold" TextColor="#8E44AD"/>
+                    <Entry Placeholder="Имя студента (например, Иванов Иван)" 
+                           Text="{Binding NewStudentName, Mode=TwoWay}"
+                           BackgroundColor="#FAFAFA"/>
+                    <Button Text="Добавить студента" 
+                            Command="{Binding AddStudentCommand}"
+                            BackgroundColor="#9B59B6"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            HeightRequest="50"
+                            CornerRadius="10"/>
+                    <Label Text="{Binding StatusText}" 
+                           FontSize="14" 
+                           TextColor="#7F8C8D"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Список студентов -->
+            <Label Text="Список студентов" 
+                   FontSize="20" FontAttributes="Bold" TextColor="#2C3E50"
+                   Margin="0,10,0,10"/>
+
+            <CollectionView ItemsSource="{Binding Students}" MinimumHeightRequest="100">
+                <CollectionView.EmptyView>
+                    <Border Stroke="#BDC3C7" StrokeShape="RoundRectangle 10" Padding="30" BackgroundColor="White">
+                        <Label Text="Пока нет студентов. Добавьте первого!" 
+                               TextColor="#7F8C8D" FontSize="16" HorizontalOptions="Center"/>
+                    </Border>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Student">
+                        <Border Stroke="#ECF0F1" StrokeShape="RoundRectangle 10"
+                                Padding="15" Margin="0,5" BackgroundColor="White">
+                            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10">
+                                <!-- Информация о студенте -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="17" TextColor="#2C3E50"/>
+                                    <HorizontalStackLayout Spacing="15">
+                                        <Label Text="{Binding AverageGrade, StringFormat='GPA: {0:F2}'}" 
+                                               FontSize="13" FontAttributes="Bold" TextColor="#27AE60"/>
+                                        <Label Text="{Binding Subjects.Count, StringFormat='Предметов: {0}'}" 
+                                               FontSize="13" TextColor="#3498DB"/>
+                                        <Label Text="{Binding Debts.Count, StringFormat='Долгов: {0}'}" 
+                                               FontSize="13" TextColor="#E74C3C"/>
+                                        <Label Text="{Binding AttendancePercent, StringFormat='Посещ: {0:F0}%'}" 
+                                               FontSize="13" TextColor="#16A085"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <!-- Кнопка профиля -->
+                                <Button Grid.Column="1"
+                                        Text="→"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        TextColor="White"
+                                        BackgroundColor="#3498DB"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        CornerRadius="20"
+                                        Padding="0"
+                                        VerticalOptions="Center"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StudentsViewModel}}, Path=OpenProfileCommand}"
+                                        CommandParameter="{Binding .}"/>
+
+                                <!-- Кнопка удаления -->
+                                <Button Grid.Column="2"
+                                        Text="✕"
+                                        FontSize="16"
+                                        FontAttributes="Bold"
+                                        TextColor="White"
+                                        BackgroundColor="#E74C3C"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        CornerRadius="20"
+                                        Padding="0"
+                                        VerticalOptions="Center"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StudentsViewModel}}, Path=DeleteStudentCommand}"
+                                        CommandParameter="{Binding .}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

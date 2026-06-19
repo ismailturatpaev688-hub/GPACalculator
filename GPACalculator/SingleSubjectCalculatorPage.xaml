@@ -17,6 +17,28 @@
                    TextColor="#2C3E50"
                    Margin="0,10,0,20"/>
 
+            <!-- БЛОК ВЫБОРА СТУДЕНТА -->
+            <Border Stroke="#9B59B6" 
+                    StrokeShape="RoundRectangle 15" 
+                    Padding="20"
+                    BackgroundColor="#F4ECF7">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Выберите студента" 
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#8E44AD"/>
+                    <Picker ItemsSource="{Binding Students}"
+                            ItemDisplayBinding="{Binding DisplayText}"
+                            SelectedItem="{Binding SelectedStudent, Mode=TwoWay}"
+                            Title="Выберите студента..."
+                            BackgroundColor="White"
+                            TextColor="#2C3E50"/>
+                    <Label Text="Оценки будут сохранены выбранному студенту."
+                           FontSize="12"
+                           TextColor="#7F8C8D"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Ввод названия предмета, веса предмета и добавление оценок -->
             <Border Stroke="#E0E0E0" 
                     StrokeShape="RoundRectangle 15" 
@@ -36,7 +58,7 @@
                            FontSize="16"
                            FontAttributes="Bold"
                            TextColor="#3498DB"/>
-                    
+
                     <Entry Placeholder="Вес (1-5)" 
                            Text="{Binding Weight, Mode=TwoWay}"
                            Keyboard="Numeric" BackgroundColor="#FAFAFA"/>
@@ -64,9 +86,6 @@
 
                 </VerticalStackLayout>
             </Border>
-
-            
-            
 
             <!-- Список добавленных оценок -->
             <Border Stroke="#E0E0E0" 
