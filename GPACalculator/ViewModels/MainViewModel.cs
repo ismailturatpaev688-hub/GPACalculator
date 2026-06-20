@@ -14,12 +14,7 @@ namespace GPACalculator.ViewModels
         private readonly IGpaCalculator _gpaCalculator;
         private readonly IStudentDataService _studentDataService;
 
-        // Поля для БЫСТРОГО добавления (один предмет + одна оценка)
-        private string _newSubjectName = "";
-        private string _newSubjectGrade = "";
-        private string _newSubjectWeight = "";
-
-        // Поля для ПАКЕТНОГО добавления (несколько оценок к одному предмету) 
+        // Поля для пакетного добавления
         private string _batchSubjectName = "";
         private string _batchWeight = "";
         private string _batchNewGrade = "";
@@ -28,7 +23,7 @@ namespace GPACalculator.ViewModels
         private string _gpaResultText = "Введите предметы и нажмите Рассчитать";
         private Student _selectedStudent;
 
-        // Локальный список оценок для пакетного режима (до сохранения)
+        // Локальный список оценок для пакетного режима
         public ObservableCollection<GradeEntry> BatchGrades { get; } = new();
 
         // Свойства для пакетного добавления
@@ -55,7 +50,7 @@ namespace GPACalculator.ViewModels
             set { if (_gpaResultText != value) { _gpaResultText = value; OnPropertyChanged(); } }
         }
 
-        // Выбранный студент — к нему добавляются предметы
+        // Выбранный студент к нему добавляются предметы
         public Student SelectedStudent
         {
             get => _selectedStudent;
@@ -65,7 +60,6 @@ namespace GPACalculator.ViewModels
                 {
                     _selectedStudent = value;
                     OnPropertyChanged();
-                    // Уведомляем UI, что Subjects изменились (они теперь от другого студента)
                     OnPropertyChanged(nameof(Subjects));
                     // Пересчитываем результат, если он был
                     if (Subjects.Count > 0) ExecuteCalculateGpa();

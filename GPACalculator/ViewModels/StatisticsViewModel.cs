@@ -287,7 +287,6 @@ namespace GPACalculator.ViewModels
         {
             if (SelectedStudent == null || debt == null) return;
             _studentDataService.RemoveDebt(SelectedStudent, debt);
-            // Пересчитываем, чтобы обновить TotalDebtsText
             ExecuteLoadStatistics();
         }
 
